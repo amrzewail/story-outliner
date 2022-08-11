@@ -71,6 +71,11 @@ public class GridViewport : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         return null;
     }
 
+    public List<GridElement> GetAllElements()
+    {
+        return _allElements;
+    }
+
     public void SetBehind(Transform target)
     {
         target.SetSiblingIndex(transform.GetSiblingIndex() + 1);

@@ -45,6 +45,8 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
     protected virtual void Start()
     {
         _normalSize = ((RectTransform)transform).sizeDelta;
+
+        Deselect();
     }
 
 
@@ -95,6 +97,16 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
     public void ResizeCallback()
     {
         _size = (Size)(((int)_size + 1) % (int)Size.Count);
+    }
+
+    public virtual void Select()
+    {
+        transform.Find("Selection").gameObject.SetActive(true);
+    }
+
+    public virtual void Deselect()
+    {
+        transform.Find("Selection").gameObject.SetActive(false);
     }
 
     public virtual string Serialize()
