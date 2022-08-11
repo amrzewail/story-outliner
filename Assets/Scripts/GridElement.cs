@@ -7,11 +7,21 @@ using UnityEngine.EventSystems;
 
 public class GridElement : MonoBehaviour, IPointerClickHandler
 {
+
+    protected enum Size
+    {
+        Medium,
+        Small,
+        Large,
+        Count
+    };
+
     [Serializable]
     private class Output
     {
         public string guid;
         public V3 position;
+        public Size size = Size.Medium;
     }
 
     private class V3
@@ -19,7 +29,11 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
         public float x, y, z;
     }
 
+    private Vector2 _normalSize;
+
     protected bool _isMoving = false;
+
+    protected Size _size = Size.Medium;
 
     public string guid { get; set; }
 
@@ -28,16 +42,17 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
         _isMoving = true;
     }
 
-    public void ArrowClickCallback()
+    protected virtual void Start()
     {
-        ArrowController.Instance.PrepareConnection(guid);
+        _normalSize = ((RectTransform)transform).sizeDelta;
     }
 
-    private void LateUpdate()
+
+    protected virtual void LateUpdate()
     {
         if (_isMoving)
         {
-            CameraController.Instance.disable = true;
+            //CameraController.Instance.disable = true;
 
             Vector3 position = transform.position;
 
@@ -54,11 +69,32 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
                 _isMoving = false;
             }
         }
+
+        switch (_size)
+        {
+            case Size.Medium:
+                ((RectTransform)transform).sizeDelta = _normalSize;
+                break;
+
+            case Size.Small:
+                ((RectTransform)transform).sizeDelta = new Vector2(_normalSize.x, _normalSize.y / 3);
+                break;
+
+            case Size.Large:
+                ((RectTransform)transform).sizeDelta = _normalSize * 3;
+                break;
+        }
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
         Debug.Log("pointer click");
+    }
+
+
+    public void ResizeCallback()
+    {
+        _size = (Size)(((int)_size + 1) % (int)Size.Count);
     }
 
     public virtual string Serialize()
@@ -70,6 +106,7 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
             y = transform.position.y,
             z = transform.position.z 
         };
+        data.size = _size;
         return JsonConvert.SerializeObject(data);
     }
 
@@ -78,5 +115,6 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
         Output data = JsonConvert.DeserializeObject<Output>(str);
         guid = data.guid;
         transform.position = new Vector3(data.position.x, data.position.y, data.position.z);
+        _size = data.size;
     }
 }

@@ -29,7 +29,7 @@ public class CameraController : MonoBehaviour
         if (!disable)
         {
 
-            if (Input.GetMouseButton(0))
+            if (Input.GetMouseButton(1))
             {
                 var delta = Input.mousePosition - _mousePosition;
 

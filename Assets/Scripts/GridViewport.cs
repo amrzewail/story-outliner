@@ -13,11 +13,16 @@ public class GridViewport : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     public class Data
     {
         public List<string> storyEvents;
+        public List<string> characters;
     }
 
     public static GridViewport Instance { get; private set; }
 
     private List<GridElement> _storyEvents = new List<GridElement>();
+    private List<GridElement> _characters = new List<GridElement>();
+
+
+    private List<GridElement> _allElements = new List<GridElement>();
 
     private void Start()
     {
@@ -38,7 +43,12 @@ public class GridViewport : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         if (g is StoryEventElement)
         {
             _storyEvents.Add(g);
+        }else if (g is CharacterElement)
+        {
+            _characters.Add(g);
         }
+
+        _allElements.Add(g);
 
         return g;
     }
@@ -51,7 +61,7 @@ public class GridViewport : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
     public GridElement GetElement(string guid)
     {
-        foreach(var e in _storyEvents)
+        foreach(var e in _allElements)
         {
             if (e.guid.Equals(guid))
             {
@@ -68,40 +78,62 @@ public class GridViewport : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        CameraController.Instance.disable = true;
+        //CameraController.Instance.disable = true;
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        CameraController.Instance.disable = false;
+        //CameraController.Instance.disable = false;
     }
 
     public virtual string Serialize()
     {
         Data data = new Data();
         data.storyEvents = new List<string>();
+        data.characters = new List<string>();
         foreach(var e in _storyEvents)
         {
             data.storyEvents.Add(e.Serialize());
+        }
+        foreach(var e in _characters)
+        {
+            data.characters.Add(e.Serialize());
         }
         return JsonConvert.SerializeObject(data);
     }
 
     public virtual void Deserialize(string str)
     {
-        foreach (var e in _storyEvents)
+        Clear();
+
+        Data data = JsonConvert.DeserializeObject<Data>(str);
+
+        if (data.storyEvents != null)
+        {
+            foreach (var e in data.storyEvents)
+            {
+                var element = InstantiateElement(Controller.Instance.storyEventPrefab);
+                element.Deserialize(e);
+            }
+        }
+        if (data.characters != null)
+        {
+            foreach (var e in data.characters)
+            {
+                var element = InstantiateElement(Controller.Instance.characterPrefab);
+                element.Deserialize(e);
+            }
+        }
+    }
+
+    public void Clear()
+    {
+        foreach (var e in _allElements)
         {
             Destroy(e.gameObject);
         }
         _storyEvents.Clear();
-
-        Data data = JsonConvert.DeserializeObject<Data>(str);
-
-
-        foreach (var e in data.storyEvents)
-        {
-            var element = InstantiateElement(Controller.Instance.storyEventPrefab);
-            element.Deserialize(e);
-        }
+        _characters.Clear();
+        _allElements.Clear();
     }
 }
