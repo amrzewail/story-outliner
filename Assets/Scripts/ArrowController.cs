@@ -150,7 +150,9 @@ public class ArrowController : MonoBehaviour
                 GridViewport.Instance.SetBehind(_arrows[connection.id].transform);
             }
 
-            _arrows[connection.id].Set(element1.transform.position, element2.transform.position, connection.type == ConnectionType.OneWay ? 100 : 0);
+            Vector2 direction = element2.transform.position - element1.transform.position;
+            float angle = Mathf.Rad2Deg * Mathf.Atan2(direction.y, direction.x);
+            _arrows[connection.id].Set(element1.transform.position, element2.transform.position, element2.GetConnectionOffset(angle, connection.type));
         }
 
         _dontDestroy = false;

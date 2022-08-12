@@ -8,7 +8,7 @@ using UnityEngine.EventSystems;
 public class GridElement : MonoBehaviour, IPointerClickHandler
 {
 
-    protected enum Size
+    public enum Size
     {
         Medium,
         Small,
@@ -36,6 +36,8 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
     protected Size _size = Size.Medium;
 
     public string guid { get; set; }
+
+    public Size size => _size;
 
     public void MoveClickCallback()
     {
@@ -107,6 +109,52 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
     public virtual void Deselect()
     {
         transform.Find("Selection").gameObject.SetActive(false);
+    }
+
+    public virtual float GetConnectionOffset(float angle, ConnectionType type)
+    {
+        if (type == ConnectionType.Marriage)
+        {
+            return 0;
+        }
+        else
+        {
+            Vector2 size = ((RectTransform)transform).sizeDelta;
+            float diagonal = Mathf.Sqrt(Mathf.Pow(size.x, 2) + Mathf.Pow(size.y, 2));
+            float diagAngle = Mathf.Atan2(size.y, size.x) * Mathf.Rad2Deg;
+
+            float lerp;
+            float side;
+
+            if (angle < 0) angle += 180;
+            if (angle > 180 - diagAngle || angle < diagAngle)
+            {
+                if (angle > 180 - diagAngle) angle = 180 - angle;
+                lerp = angle / diagAngle;
+                side = size.x;
+            }
+            else
+            {
+                // min: diagAngle
+                // max: 180 - diagAngle
+
+                // new min: 0
+                // new max: 180 - diagAngle * 2
+
+                angle -= diagAngle;
+                if (angle > 90 - diagAngle)
+                {
+                    angle = 180 - diagAngle * 2 - angle;
+                }
+                lerp = 1 - angle / (90 - diagAngle);
+                side = size.y;
+            }
+
+            lerp = Mathf.Pow(lerp, 2);
+
+            return Mathf.Lerp(side, diagonal, lerp) / 2;
+
+        }
     }
 
     public virtual string Serialize()
