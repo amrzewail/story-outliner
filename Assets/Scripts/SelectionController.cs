@@ -73,6 +73,19 @@ public class SelectionController : MonoBehaviour, IPointerDownHandler, IPointerU
             }
         }
 
+        if (Input.GetKeyDown(KeyCode.Delete))
+        {
+            if (_selectedElements != null && _selectedElements.Count > 0)
+            {
+                foreach(var element in _selectedElements)
+                {
+                    GridViewport.Instance.DeleteElement(element);
+                }
+                _selectedElements.Clear();
+                _isMoving = false;
+            }
+        }
+
 
         if (_isMoving)
         {

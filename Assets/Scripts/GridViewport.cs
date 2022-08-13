@@ -59,6 +59,22 @@ public class GridViewport : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         return g;
     }
 
+    public void DeleteElement(GridElement g)
+    {
+        if (g is StoryEventElement)
+        {
+            _storyEvents.Remove(g);
+        }
+        else if (g is CharacterElement)
+        {
+            _characters.Remove(g);
+        }
+
+        _allElements.Remove(g);
+
+        Destroy(g.gameObject);
+    }
+
     public GridElement GetElement(string guid)
     {
         foreach(var e in _allElements)
