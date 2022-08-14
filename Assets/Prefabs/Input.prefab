@@ -362,7 +362,7 @@ MonoBehaviour:
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
   preserveNumbers: 0
-  farsi: 1
+  farsi: 0
   originalText: "\u200B"
   fixTags: 1
   forceFix: 0
