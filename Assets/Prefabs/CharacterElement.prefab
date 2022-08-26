@@ -876,7 +876,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4566882652390637903, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
       propertyPath: m_RootOrder
-      value: 7
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 6363793072058940284, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
       propertyPath: m_text
@@ -1054,9 +1054,17 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: MoveClickCallback
       objectReference: {fileID: 0}
+    - target: {fileID: 8232942609212679798, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: m_RootOrder
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 8436145495159207592, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8649730448204376876, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 6752888975440554294, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}

@@ -2,6 +2,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -22,11 +23,24 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
         public string guid;
         public V3 position;
         public Size size = Size.Medium;
+        public V3 color = new V3(0.34f, 0.34f, 0.34f);
     }
 
     private class V3
     {
         public float x, y, z;
+
+        public V3()
+        {
+
+        }
+
+        public V3(float x, float y, float z)
+        {
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
     }
 
     private Vector2 _normalSize;
@@ -43,6 +57,15 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
     {
         _isMoving = true;
     }
+
+    public async void ColorClickCallback()
+    {
+        var col = GetColor();
+        Color color = await ColorGrid.Instance.Show(col);
+
+        ChangeColor(color);
+    }
+
 
     protected virtual void Start()
     {
@@ -89,6 +112,19 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
                 break;
         }
     }
+
+    protected virtual void ChangeColor(Color color)
+    {
+        List<Colorable> colorable = GetComponentsInChildren<Colorable>().ToList();
+        colorable.ForEach(x => x.SetColor(new Color(color.r, color.g, color.b, x.GetColor().a)));
+    }
+
+    protected virtual Color GetColor()
+    {
+        Colorable colorable = GetComponentInChildren<Colorable>();
+        return colorable.GetColor();
+    }
+
 
     public void OnPointerClick(PointerEventData eventData)
     {
@@ -166,6 +202,8 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
             y = transform.position.y,
             z = transform.position.z 
         };
+        var color = GetColor();
+        data.color = new V3(color.r, color.g, color.b);
         data.size = _size;
         return JsonConvert.SerializeObject(data);
     }
@@ -176,5 +214,6 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
         guid = data.guid;
         transform.position = new Vector3(data.position.x, data.position.y, data.position.z);
         _size = data.size;
+        ChangeColor(new Color(data.color.x, data.color.y, data.color.z));
     }
 }

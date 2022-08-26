@@ -37,7 +37,7 @@ public class Controller : MonoBehaviour
     }
 
 
-    public void LoadCallback()
+    public async void LoadCallback()
     {
         if (File.Exists($"{Application.dataPath}/{_dataInputField.text}.json"))
         {
