@@ -17,6 +17,16 @@ public class Controller : MonoBehaviour
 
     public static Controller Instance { get; private set; }
 
+    private static string SavePath
+    {
+        get
+        {
+            var dir = new System.IO.DirectoryInfo(Application.dataPath);
+            string parentDir = dir.Parent.FullName;
+            return $"{parentDir}/Stories";
+        }
+    }
+
     private void Awake()
     {
         Instance = this;
@@ -46,31 +56,30 @@ public class Controller : MonoBehaviour
 
     public async void LoadCallback()
     {
-        if (File.Exists($"{Application.dataPath}/{_dataInputField.text}.json"))
+        if (File.Exists($"{SavePath}/{_dataInputField.text}.json"))
         {
-            Serializer.Deserialize(File.ReadAllText($"{Application.dataPath}/{_dataInputField.text}.json"));
+            Serializer.Deserialize(File.ReadAllText($"{SavePath}/{_dataInputField.text}.json"));
 
             PlayerPrefs.SetString("DATA", _dataInputField.text);
             PlayerPrefs.Save();
         }
-        else
-        {
-            GridViewport.Instance.Clear();
-            ArrowController.Instance.Clear();
+        //else
+        //{
+        //    GridViewport.Instance.Clear();
+        //    ArrowController.Instance.Clear();
 
-            if (!string.IsNullOrEmpty(_dataInputField.text))
-            {
-                SaveCallback();
-            }
-        }
+        //    if (!string.IsNullOrEmpty(_dataInputField.text))
+        //    {
+        //        SaveCallback();
+        //    }
+        //}
     }
 
 
     public void SaveCallback()
     {
         var str = Serializer.Serialize();
-
-        File.WriteAllText($"{Application.dataPath}/{_dataInputField.text}.json", str);
+        File.WriteAllText($"{SavePath}/Stories/{_dataInputField.text}.json", str);
 
         PlayerPrefs.SetString("DATA", _dataInputField.text);
         PlayerPrefs.Save();
