@@ -14,13 +14,14 @@ public class GridViewport : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     {
         public List<string> storyEvents;
         public List<string> characters;
+        public List<string> notes;
     }
 
     public static GridViewport Instance { get; private set; }
 
     private List<GridElement> _storyEvents = new List<GridElement>();
     private List<GridElement> _characters = new List<GridElement>();
-
+    private List<GridElement> _notes = new List<GridElement>();
 
     private List<GridElement> _allElements = new List<GridElement>();
 
@@ -31,7 +32,9 @@ public class GridViewport : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
     public GridElement InstantiateElement(GridElement g)
     {
-        g = Instantiate(g, this.transform.parent).GetComponent<GridElement>();
+        var parent = transform.parent;
+        if (g is NoteElement) parent = parent.Find("Notes");
+        g = Instantiate(g, parent).GetComponent<GridElement>();
 
         var position = g.transform.position;
         position = CameraController.Instance.transform.position;
@@ -43,9 +46,14 @@ public class GridViewport : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         if (g is StoryEventElement)
         {
             _storyEvents.Add(g);
-        }else if (g is CharacterElement)
+        }
+        else if (g is CharacterElement)
         {
             _characters.Add(g);
+        }
+        else if (g is NoteElement)
+        {
+            _notes.Add(g);
         }
 
         _allElements.Add(g);
@@ -68,6 +76,10 @@ public class GridViewport : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         else if (g is CharacterElement)
         {
             _characters.Remove(g);
+        }
+        else if (g is NoteElement)
+        {
+            _notes.Remove(g);
         }
 
         _allElements.Remove(g);
@@ -94,7 +106,7 @@ public class GridViewport : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
     public void SetBehind(Transform target)
     {
-        target.SetSiblingIndex(transform.GetSiblingIndex() + 1);
+        target.SetSiblingIndex(transform.GetSiblingIndex() + 2);
     }
 
     public void OnPointerExit(PointerEventData eventData)
@@ -112,14 +124,10 @@ public class GridViewport : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         Data data = new Data();
         data.storyEvents = new List<string>();
         data.characters = new List<string>();
-        foreach(var e in _storyEvents)
-        {
-            data.storyEvents.Add(e.Serialize());
-        }
-        foreach(var e in _characters)
-        {
-            data.characters.Add(e.Serialize());
-        }
+        data.notes = new List<string>();
+        foreach(var e in _storyEvents) data.storyEvents.Add(e.Serialize());
+        foreach(var e in _characters) data.characters.Add(e.Serialize());
+        foreach(var e in _notes) data.notes.Add(e.Serialize());
         return JsonConvert.SerializeObject(data);
     }
 
@@ -129,21 +137,18 @@ public class GridViewport : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
         Data data = JsonConvert.DeserializeObject<Data>(str);
 
-        if (data.storyEvents != null)
+        DeserializeElement(data.storyEvents, Controller.Instance.storyEventPrefab);
+        DeserializeElement(data.characters, Controller.Instance.characterPrefab);
+        DeserializeElement(data.notes, Controller.Instance.notePrefab);
+    }
+
+    private void DeserializeElement(List<string> serializedList, GridElement prefab)
+    {
+        if (serializedList == null) return;
+        foreach (var e in serializedList)
         {
-            foreach (var e in data.storyEvents)
-            {
-                var element = InstantiateElement(Controller.Instance.storyEventPrefab);
-                element.Deserialize(e);
-            }
-        }
-        if (data.characters != null)
-        {
-            foreach (var e in data.characters)
-            {
-                var element = InstantiateElement(Controller.Instance.characterPrefab);
-                element.Deserialize(e);
-            }
+            var element = InstantiateElement(prefab);
+            element.Deserialize(e);
         }
     }
 
@@ -155,6 +160,7 @@ public class GridViewport : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         }
         _storyEvents.Clear();
         _characters.Clear();
+        _notes.Clear();
         _allElements.Clear();
     }
 }

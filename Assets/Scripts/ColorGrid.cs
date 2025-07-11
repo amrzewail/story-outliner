@@ -1,3 +1,5 @@
+using Moths.Tweens.Extensions;
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -12,13 +14,18 @@ public class ColorGrid : MonoBehaviour, IPointerClickHandler
 
     private bool _isColorSelected = false;
     private Color _selectedColor = Color.gray;
+    private CanvasGroup _canvasGroup;
 
     public static ColorGrid Instance { get; private set; }
+
+    public bool IsShowing => gameObject.activeSelf;
 
     private void Awake()
     {
         Instance = this;
         ((RectTransform)transform).anchoredPosition = Vector3.zero;//.position = Vector3.zero;
+
+        _canvasGroup = GetComponent<CanvasGroup>();
 
         var colors = GetColors(12, 7);
 
@@ -149,6 +156,10 @@ public class ColorGrid : MonoBehaviour, IPointerClickHandler
     public async Task<Color> Show(Color selected)
     {
         this.gameObject.SetActive(true);
+        _canvasGroup.alpha = 0;
+        _canvasGroup.TweenAlpha(1)
+            .SetDuration(0.35f)
+            .Play();
 
         _selectedColor = selected;
         UpdateCurrentSelected();
@@ -165,6 +176,7 @@ public class ColorGrid : MonoBehaviour, IPointerClickHandler
 
         _isColorSelected = false;
 
+        _canvasGroup.alpha = 0;
         this.gameObject.SetActive(false);
 
         return _selectedColor;

@@ -117,7 +117,7 @@ public class ArrowController : MonoBehaviour
 
             var element = GridViewport.Instance.GetElement(_fromGuid);
 
-            _preparingArrow.Set(element.transform.position, Camera.main.ScreenToWorldPoint(Input.mousePosition), 0);
+            _preparingArrow.Set(element.transform.position, Camera.main.ScreenToWorldPoint(Input.mousePosition), 0, 0);
 
             if (Input.GetMouseButtonUp(0) && !_dontDestroy)
             {
@@ -162,7 +162,7 @@ public class ArrowController : MonoBehaviour
 
                 Vector2 direction = element2.transform.position - element1.transform.position;
                 float angle = Mathf.Rad2Deg * Mathf.Atan2(direction.y, direction.x);
-                _arrows[connection.id].Set(element1.transform.position, element2.transform.position, element2.GetConnectionOffset(angle, connection.type));
+                _arrows[connection.id].Set(element1.transform.position, element2.transform.position, element1.GetConnectionOffset(angle, connection.type), element2.GetConnectionOffset(angle, connection.type));
             }
         }
 

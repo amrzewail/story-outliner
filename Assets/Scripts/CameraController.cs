@@ -26,19 +26,25 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!disable)
-        {
 
-            if (Input.GetMouseButton(1))
-            {
-                var delta = Input.mousePosition - _mousePosition;
-
-                transform.position -= delta * _camera.orthographicSize / 1000f * _dragSpeed;
-            }
-
-        }
-        _camera.orthographicSize -= Input.mouseScrollDelta.y * _scrollSpeed * _camera.orthographicSize;
+        UpdateCamera();
 
         _mousePosition = Input.mousePosition;
+    }
+
+    private void UpdateCamera()
+    {
+        if (disable) return;
+        if (ColorGrid.Instance.IsShowing) return;
+
+        if (Input.GetMouseButton(1))
+        {
+
+            var delta = Input.mousePosition - _mousePosition;
+
+            transform.position -= delta * _camera.orthographicSize / 1000f * _dragSpeed;
+        }
+
+        _camera.orthographicSize -= Input.mouseScrollDelta.y * _scrollSpeed * _camera.orthographicSize;
     }
 }

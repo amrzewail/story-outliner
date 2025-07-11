@@ -9,9 +9,11 @@ public class Controller : MonoBehaviour
 {
     [SerializeField] GridElement _storyEventPrefab;
     [SerializeField] GridElement _characterPrefab;
+    [SerializeField] GridElement _notePrefab;
     [SerializeField] TMP_InputField _dataInputField;
     public GridElement storyEventPrefab => _storyEventPrefab;
     public GridElement characterPrefab => _characterPrefab;
+    public GridElement notePrefab => _notePrefab;
 
     public static Controller Instance { get; private set; }
 
@@ -28,12 +30,17 @@ public class Controller : MonoBehaviour
     public void AddStoryEventCallback()
     {
 
-        GridViewport.Instance.InstantiateElement(_storyEventPrefab);
+        GridViewport.Instance.InstantiateElement(storyEventPrefab);
     }
     public void AddCharacterCallback()
     {
 
-        GridViewport.Instance.InstantiateElement(_characterPrefab);
+        GridViewport.Instance.InstantiateElement(characterPrefab);
+    }
+    public void AddNoteCallback()
+    {
+
+        GridViewport.Instance.InstantiateElement(notePrefab);
     }
 
 

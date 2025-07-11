@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class Arrow : MonoBehaviour
 {
-    public void Set(Vector2 from, Vector2 to, float offset)
+    public void Set(Vector2 from, Vector2 to, float fromOffset, float offset)
     {
-        transform.position = from;
-
         Vector2 delta = to - from;
+
+        from += (delta.normalized) * fromOffset;
+
+        transform.position = from;
 
         float angle = Mathf.Atan2(delta.y, delta.x);
 
