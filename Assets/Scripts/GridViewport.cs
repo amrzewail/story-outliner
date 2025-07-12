@@ -2,6 +2,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -12,6 +13,9 @@ public class GridViewport : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     [Serializable]
     public class Data
     {
+        public const int CURRENT_VERSION = 1;
+
+        public int version = CURRENT_VERSION;
         public List<string> storyEvents;
         public List<string> characters;
         public List<string> notes;
@@ -23,7 +27,7 @@ public class GridViewport : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     private List<GridElement> _characters = new List<GridElement>();
     private List<GridElement> _notes = new List<GridElement>();
 
-    private List<GridElement> _allElements = new List<GridElement>();
+    private Dictionary<Guid, GridElement> _allElements = new Dictionary<Guid, GridElement>();
 
     private void Start()
     {
@@ -41,7 +45,7 @@ public class GridViewport : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         position.z = 0;
 
         g.transform.position = position;
-        g.guid = Guid.NewGuid().ToString();
+        g.guid = Guid.NewGuid();
 
         if (g is StoryEventElement)
         {
@@ -56,7 +60,7 @@ public class GridViewport : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
             _notes.Add(g);
         }
 
-        _allElements.Add(g);
+        _allElements[g.guid] = g;
 
         return g;
     }
@@ -82,26 +86,20 @@ public class GridViewport : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
             _notes.Remove(g);
         }
 
-        _allElements.Remove(g);
+        _allElements.Remove(g.guid);
 
         Destroy(g.gameObject);
     }
 
-    public GridElement GetElement(string guid)
+    public GridElement GetElement(Guid guid)
     {
-        foreach(var e in _allElements)
-        {
-            if (e.guid.Equals(guid))
-            {
-                return e;
-            }
-        }
+        if (_allElements.TryGetValue(guid, out var e)) return e;
         return null;
     }
 
     public List<GridElement> GetAllElements()
     {
-        return _allElements;
+        return _allElements.Values.ToList();
     }
 
     public void SetBehind(Transform target)
@@ -148,7 +146,9 @@ public class GridViewport : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         foreach (var e in serializedList)
         {
             var element = InstantiateElement(prefab);
+            _allElements.Remove(element.guid);
             element.Deserialize(e);
+            _allElements.TryAdd(element.guid, element);
         }
     }
 
@@ -156,7 +156,7 @@ public class GridViewport : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     {
         foreach (var e in _allElements)
         {
-            Destroy(e.gameObject);
+            Destroy(e.Value.gameObject);
         }
         _storyEvents.Clear();
         _characters.Clear();

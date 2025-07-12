@@ -24,7 +24,7 @@ public class StoryEventElement : GridElement
     }
     public void ArrowClickCallback()
     {
-        ArrowController.Instance.PrepareConnection(guid, ConnectionType.OneWay);
+        ConnectionController.Instance.PrepareConnection(guid, ConnectionType.OneWay);
     }
 
     public override string Serialize()

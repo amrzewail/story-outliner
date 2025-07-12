@@ -34,6 +34,8 @@ public class Controller : MonoBehaviour
 
     private void Start()
     {
+        Application.targetFrameRate = 120;
+
         _dataInputField.text = PlayerPrefs.GetString("DATA", "data");
     }
 
@@ -79,7 +81,7 @@ public class Controller : MonoBehaviour
     public void SaveCallback()
     {
         var str = Serializer.Serialize();
-        File.WriteAllText($"{SavePath}/Stories/{_dataInputField.text}.json", str);
+        File.WriteAllText($"{SavePath}/{_dataInputField.text}.json", str);
 
         PlayerPrefs.SetString("DATA", _dataInputField.text);
         PlayerPrefs.Save();

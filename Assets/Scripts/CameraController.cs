@@ -12,6 +12,7 @@ public class CameraController : MonoBehaviour
     
     private Vector3 _mousePosition;
     private Camera _camera;
+    private bool _isDragging = false;
 
     public bool disable = false;
 
@@ -36,6 +37,13 @@ public class CameraController : MonoBehaviour
     {
         if (disable) return;
         if (ColorGrid.Instance.IsShowing) return;
+        if (!IsMouseWithinScreen()) return;
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            _isDragging = true;
+            _mousePosition = Input.mousePosition;
+        }
 
         if (Input.GetMouseButton(1))
         {
@@ -46,5 +54,12 @@ public class CameraController : MonoBehaviour
         }
 
         _camera.orthographicSize -= Input.mouseScrollDelta.y * _scrollSpeed * _camera.orthographicSize;
+    }
+
+    private bool IsMouseWithinScreen()
+    {
+        Vector3 pos = Input.mousePosition;
+        return pos.x >= 0 && pos.x <= Screen.width &&
+               pos.y >= 0 && pos.y <= Screen.height;
     }
 }

@@ -5,14 +5,13 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class SelectionController : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
+public class SelectionController : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     private Image _selectionImage;
     private Vector2 _originalPosition;
     private Rect _selectionRect;
     private bool _isSelecting = false;
 
-    private bool _isPointerInside = false;
     private bool _isMoving = false;
     private Vector2 _lastMouseWorldPosition;
 
@@ -31,6 +30,8 @@ public class SelectionController : MonoBehaviour, IPointerDownHandler, IPointerU
 
     private void Update()
     {
+        if (!IsMouseWithinScreen()) return;
+
         if (_isSelecting)
         {
             Vector2 currentPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -61,14 +62,7 @@ public class SelectionController : MonoBehaviour, IPointerDownHandler, IPointerU
         {
             if (_selectedElements != null && _selectedElements.Count > 0)
             {
-                if(!_isMoving && _isPointerInside)
-                {
-                    _isMoving = true;
-                }
-                else
-                {
-                    _isMoving = false;
-                }
+                _isMoving = !_isMoving;
                 _lastMouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             }
         }
@@ -89,7 +83,6 @@ public class SelectionController : MonoBehaviour, IPointerDownHandler, IPointerU
 
         if (_isMoving)
         {
-
             var currentMouseWorldPosition = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
             var delta = currentMouseWorldPosition - _lastMouseWorldPosition;
@@ -100,6 +93,11 @@ public class SelectionController : MonoBehaviour, IPointerDownHandler, IPointerU
             }
 
             _lastMouseWorldPosition = currentMouseWorldPosition;
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                _isMoving = false;
+            }
         }
     }
 
@@ -163,13 +161,11 @@ public class SelectionController : MonoBehaviour, IPointerDownHandler, IPointerU
         return false;
     }
 
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        _isPointerInside = false;
-    }
 
-    public void OnPointerEnter(PointerEventData eventData)
+    private bool IsMouseWithinScreen()
     {
-        _isPointerInside = true;
+        Vector3 pos = Input.mousePosition;
+        return pos.x >= 0 && pos.x <= Screen.width &&
+               pos.y >= 0 && pos.y <= Screen.height;
     }
 }

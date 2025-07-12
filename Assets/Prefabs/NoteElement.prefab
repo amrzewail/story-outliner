@@ -32,6 +32,30 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0.000015258789
       objectReference: {fileID: 0}
+    - target: {fileID: 3271649684247270779, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnDragWorld.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3271649684247270779, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnDragWorld.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 6335633716650668220}
+    - target: {fileID: 3271649684247270779, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnDragWorld.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3271649684247270779, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnDragWorld.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: DynamicResizeCallback
+      objectReference: {fileID: 0}
+    - target: {fileID: 3271649684247270779, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnDragWorld.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: GridElement, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 3271649684247270779, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnDragWorld.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 3501471556993658283, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -67,6 +91,30 @@ PrefabInstance:
     - target: {fileID: 5935323590862066814, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 6335360490083326002, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnEndDrag.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 6335633716650668220}
+    - target: {fileID: 6335360490083326002, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnDragWorld.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 6335633716650668220}
+    - target: {fileID: 6335360490083326002, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnStartDrag.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 6335633716650668220}
+    - target: {fileID: 6335360490083326002, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnEndDrag.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: MoveDragEndCallback
+      objectReference: {fileID: 0}
+    - target: {fileID: 6335360490083326002, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnDragWorld.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: MoveDragCallback
+      objectReference: {fileID: 0}
+    - target: {fileID: 6335360490083326002, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnStartDrag.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: MoveDragStartCallback
       objectReference: {fileID: 0}
     - target: {fileID: 6363793072058940284, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
       propertyPath: m_text

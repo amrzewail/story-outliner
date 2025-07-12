@@ -1,3 +1,4 @@
+using Moths.Tweens.Extensions;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,7 +7,7 @@ using UnityEngine.UI;
 
 public class ArrowConnectable : MonoBehaviour, IPointerClickHandler
 {
-    private Image _image;
+    private CanvasGroup _canvasGroup;
 
     [SerializeField] GridElement _targetElement;
 
@@ -14,30 +15,35 @@ public class ArrowConnectable : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (ArrowController.Instance.isMakingConnection)
+        if (ConnectionController.Instance.isMakingConnection)
         {
-            ArrowController.Instance.MakeConnection(_targetElement.guid);
+            ConnectionController.Instance.MakeConnection(_targetElement.guid);
         }
     }
 
     private void Start()
     {
-        _image = GetComponent<Image>();
+        _canvasGroup = GetComponent<CanvasGroup>();
     }
 
     private void LateUpdate()
     {
-        if (ArrowController.Instance.isMakingConnection)
+        if (ConnectionController.Instance.isMakingConnection)
         {
-            _image.enabled = true;
-            foreach(var g in _disable)
+            if (!_canvasGroup.blocksRaycasts)
             {
-                g.SetActive(false);
+                _canvasGroup.TweenAlpha(1).SetDuration(0.15f).Play();
+                _canvasGroup.blocksRaycasts = true;
+                foreach (var g in _disable)
+                {
+                    g.SetActive(false);
+                }
             }
         }
-        else
+        else if (_canvasGroup.blocksRaycasts)
         {
-            _image.enabled = false;
+            _canvasGroup.TweenAlpha(0).SetDuration(0.15f).Play();
+            _canvasGroup.blocksRaycasts = false;
             foreach (var g in _disable)
             {
                 g.SetActive(true);

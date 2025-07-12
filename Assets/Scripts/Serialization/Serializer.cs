@@ -16,7 +16,7 @@ public static class Serializer
     public static string Serialize()
     {
         string grid = GridViewport.Instance.Serialize();
-        string arrows = ArrowController.Instance.Serialize();
+        string arrows = ConnectionController.Instance.Serialize();
 
         return JsonConvert.SerializeObject(new Data
         {
@@ -30,6 +30,6 @@ public static class Serializer
         Data data = JsonConvert.DeserializeObject<Data>(str);
 
         GridViewport.Instance.Deserialize(data.grid);
-        ArrowController.Instance.Deserialize(data.arrows);
+        ConnectionController.Instance.Deserialize(data.arrows);
     }
 }

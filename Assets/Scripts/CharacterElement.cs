@@ -65,7 +65,7 @@ public class CharacterElement : GridElement
 
     public void MarriageClickCallback()
     {
-        ArrowController.Instance.PrepareConnection(guid, ConnectionType.Marriage);
+        ConnectionController.Instance.PrepareConnection(guid, ConnectionType.Marriage);
     }
 
     public void SwitchGenderCallback()

@@ -41,30 +41,37 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
         }
     }
 
+    private Vector3 _lastWorldPosition;
+    private Vector3 _screenPosition;
     private Vector2 _normalSize;
     private Vector2 _moveOffset;
     private int _moveFrameIndex;
-    private Button _moveButton;
+    private Vector2 _resizeOffset;
+    private Camera _camera;
 
     public Rect Rect
     {
         get
         {
+            Vector3 position = Transform.position;
+            Vector2 sizeDelta = ((RectTransform)Transform).sizeDelta;
             return new Rect
             {
-                x = transform.position.x - ((RectTransform)transform).sizeDelta.x / 2f,
-                y = transform.position.y + ((RectTransform)transform).sizeDelta.y / 2f,
-                width = ((RectTransform)transform).sizeDelta.x,
-                height = ((RectTransform)transform).sizeDelta.y,
+                x = position.x - sizeDelta.x / 2f,
+                y = position.y + sizeDelta.y / 2f,
+                width = sizeDelta.x,
+                height = sizeDelta.y,
             };
         }
 
         set
         {
-            ((RectTransform)transform).sizeDelta = new Vector2(value.width, value.height);
-            transform.position = new Vector2(value.x + value.width / 2f, value.y - value.height / 2f);
+            ((RectTransform)Transform).sizeDelta = new Vector2(value.width, value.height);
+            Transform.position = new Vector2(value.x + value.width / 2f, value.y - value.height / 2f);
         }
     }
+    public Transform Transform { get; private set; }
+
 
     protected bool _isMoving = false;
 
@@ -72,17 +79,54 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
 
     protected Size _size = Size.Medium;
 
-    public string guid { get; set; }
+    public Guid guid { get; set; }
 
     public Size size => _size;
+
+
+    private void Awake()
+    {
+        Transform = transform;
+    }
+
+    protected virtual void Start()
+    {
+        _normalSize = ((RectTransform)Transform).sizeDelta;
+        _camera = Camera.main;
+
+        Deselect();
+    }
+
+
 
     public void MoveClickCallback()
     {
         if (_isMoving) return;
         _isMoving = true;
         _moveFrameIndex = Time.frameCount;
-        _moveOffset = transform.position - Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        _moveOffset = Transform.position - Camera.main.ScreenToWorldPoint(Input.mousePosition);
         OnStartMove();
+    }
+
+    public void MoveDragStartCallback()
+    {
+        _moveOffset = Transform.position - Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        OnStartMove();
+        _moveFrameIndex = Time.frameCount;
+    }
+
+    public void MoveDragCallback(Vector2 dragWorld)
+    {
+        Vector3 position = Transform.position + new Vector3(dragWorld.x, dragWorld.y, 0);
+
+        OnMove(position - Transform.position);
+
+        Transform.position = position;
+    }
+
+    public void MoveDragEndCallback()
+    {
+        OnEndMove();
     }
 
     public async void ColorClickCallback()
@@ -93,33 +137,20 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
         ChangeColor(color);
     }
 
-
-    protected virtual void Start()
-    {
-        _moveButton = transform.Find("MoveButton").GetComponent<Button>();
-
-        _normalSize = ((RectTransform)transform).sizeDelta;
-
-        Deselect();
-    }
-
-
     protected virtual void LateUpdate()
     {
-        _moveButton.interactable = !_isMoving;
-
         if (_isMoving)
         {
             //CameraController.Instance.disable = true;
 
-            Vector3 position = transform.position;
+            Vector3 position = Transform.position;
             position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             position += new Vector3(_moveOffset.x, _moveOffset.y, 0);
             position.z = 0;
 
-            OnMove(position - transform.position);
+            OnMove(position - Transform.position);
 
-            transform.position = position;
+            Transform.position = position;
 
             if (Time.frameCount != _moveFrameIndex && Input.GetMouseButtonUp(0))
             {
@@ -133,8 +164,8 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
             var mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             var rect = Rect;
             Vector2 size = rect.size;
-            size.x = mousePosition.x - rect.x;
-            size.y = rect.y - mousePosition.y;
+            size.x = mousePosition.x - rect.x - _resizeOffset.x;
+            size.y = rect.y - mousePosition.y + _resizeOffset.y;
             rect.size = size;
             Rect = rect;
         }
@@ -142,16 +173,21 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
         switch (_size)
         {
             case Size.Medium:
-                ((RectTransform)transform).sizeDelta = _normalSize;
+                ((RectTransform)Transform).sizeDelta = _normalSize;
                 break;
 
             case Size.Small:
-                ((RectTransform)transform).sizeDelta = new Vector2(_normalSize.x, _normalSize.y / 3);
+                ((RectTransform)Transform).sizeDelta = new Vector2(_normalSize.x, _normalSize.y / 3);
                 break;
 
             case Size.Large:
-                ((RectTransform)transform).sizeDelta = _normalSize * 3;
+                ((RectTransform)Transform).sizeDelta = _normalSize * 3;
                 break;
+        }
+
+        if (_lastWorldPosition != (_lastWorldPosition = Transform.position))
+        {
+            _screenPosition = _camera.WorldToScreenPoint(_lastWorldPosition);
         }
     }
 
@@ -175,7 +211,6 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        Debug.Log("pointer click");
     }
 
 
@@ -188,64 +223,57 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
     {
         _isResizing = !_isResizing;
         _size = Size.Dynamic;
+        var mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        _resizeOffset = (Vector2)mousePosition - new Vector2(Rect.x + Rect.width, Rect.y - Rect.height);
+    }
+
+    public void DynamicResizeCallback(Vector2 dragWorld)
+    {
+        _size = Size.Dynamic;
+        var rect = Rect;
+        Vector2 size = rect.size;
+        size += new Vector2(dragWorld.x, -dragWorld.y);
+        rect.size = size;
+        Rect = rect;
+
+        Debug.Log(dragWorld);
     }
 
     public virtual void Select()
     {
-        transform.Find("Selection").gameObject.SetActive(true);
+        Transform.Find("Selection").gameObject.SetActive(true);
     }
 
     public virtual void Deselect()
     {
-        transform.Find("Selection").gameObject.SetActive(false);
+        Transform.Find("Selection").gameObject.SetActive(false);
     }
 
     public virtual float GetConnectionOffset(float angle, ConnectionType type)
     {
-        Vector2 size = ((RectTransform)transform).sizeDelta;
-        float diagonal = Mathf.Sqrt(Mathf.Pow(size.x, 2) + Mathf.Pow(size.y, 2));
-        float diagAngle = Mathf.Atan2(size.y, size.x) * Mathf.Rad2Deg;
+        var rect = Rect;
 
-        float lerp;
-        float side;
+        float w = rect.width / 2f;
+        float h = rect.height / 2f;
 
-        if (angle < 0) angle += 180;
-        if (angle > 180 - diagAngle || angle < diagAngle)
-        {
-            if (angle > 180 - diagAngle) angle = 180 - angle;
-            lerp = angle / diagAngle;
-            side = size.x;
-        }
-        else
-        {
-            // min: diagAngle
-            // max: 180 - diagAngle
+        float angleRad = angle * Mathf.Deg2Rad;
+        float dx = Mathf.Cos(angleRad);
+        float dy = Mathf.Sin(angleRad);
 
-            // new min: 0
-            // new max: 180 - diagAngle * 2
+        float tx = (dx != 0f) ? w / Mathf.Abs(dx) : float.MaxValue;
+        float ty = (dy != 0f) ? h / Mathf.Abs(dy) : float.MaxValue;
 
-            angle -= diagAngle;
-            if (angle > 90 - diagAngle)
-            {
-                angle = 180 - diagAngle * 2 - angle;
-            }
-            lerp = 1 - angle / (90 - diagAngle);
-            side = size.y;
-        }
-
-        lerp = Mathf.Pow(lerp, 2);
-
-        return Mathf.Lerp(side, diagonal, lerp) / 2;
+        return Mathf.Min(tx, ty);
     }
 
     public virtual string Serialize()
     {
         Output data = new Output();
-        data.guid = guid;
+        data.guid = guid.ToString();
         data.position = new V3(){
-            x = transform.position.x,
-            y = transform.position.y,
-            z = transform.position.z 
+            x = Transform.position.x,
+            y = Transform.position.y,
+            z = Transform.position.z 
         };
         var color = GetColor();
         data.color = new V3(color.r, color.g, color.b);
@@ -257,7 +285,7 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
     public virtual void Deserialize(string str)
     {
         Output data = JsonConvert.DeserializeObject<Output>(str);
-        guid = data.guid;
+        guid = new Guid(data.guid);
         _size = data.size;
         if (_size == Size.Dynamic)
         {
@@ -265,7 +293,14 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
             rect.size = new Vector2(data.rectSize.x, data.rectSize.y);
             Rect = rect;
         }
-        transform.position = new Vector3(data.position.x, data.position.y, data.position.z);
+        Transform.position = new Vector3(data.position.x, data.position.y, data.position.z);
         ChangeColor(new Color(data.color.x, data.color.y, data.color.z));
+    }
+
+
+    public bool IsOutOfScreenBounds()
+    {
+        return _screenPosition.x < 0 || _screenPosition.x > Screen.width ||
+               _screenPosition.y < 0 || _screenPosition.y > Screen.height;
     }
 }

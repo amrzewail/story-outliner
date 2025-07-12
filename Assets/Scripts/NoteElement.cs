@@ -28,7 +28,7 @@ public class NoteElement : GridElement
 
     public void ArrowClickCallback()
     {
-        ArrowController.Instance.PrepareConnection(guid, ConnectionType.OneWay);
+        ConnectionController.Instance.PrepareConnection(guid, ConnectionType.OneWay);
     }
 
     protected override void OnStartMove()
