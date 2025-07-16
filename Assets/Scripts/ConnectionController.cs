@@ -208,6 +208,7 @@ public partial class ConnectionController : MonoBehaviour
     public virtual void Deserialize(string str)
     {
         Clear();
+        if (string.IsNullOrEmpty(str)) return;
         List<SerializableConnection> serializables = JsonConvert.DeserializeObject<List<SerializableConnection>>(str);
         for (int i = 0; i < serializables.Count; i++) _connections.Add(serializables[i]);
     }

@@ -464,7 +464,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7387852160518372161}
-  m_Father: {fileID: 2583731797802235637}
+  m_Father: {fileID: 2663952490193837462}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
@@ -1194,14 +1194,14 @@ PrefabInstance:
       insertIndex: 1
       addedObject: {fileID: 232849340148719543}
     - targetCorrespondingSourceObject: {fileID: 6363793072874045908, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
-      insertIndex: 7
-      addedObject: {fileID: 7962877072714131494}
-    - targetCorrespondingSourceObject: {fileID: 6363793072874045908, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
       insertIndex: -1
       addedObject: {fileID: 328988008}
     - targetCorrespondingSourceObject: {fileID: 6363793072874045908, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1328437199}
+    - targetCorrespondingSourceObject: {fileID: 6878048693079550647, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 7962877072714131494}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 6363793072874045907, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
       insertIndex: -1
@@ -1249,3 +1249,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2da0c512f12947e489f739169773d7ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!224 &2663952490193837462 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 6878048693079550647, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+  m_PrefabInstance: {fileID: 8902488865791407905}
+  m_PrefabAsset: {fileID: 0}

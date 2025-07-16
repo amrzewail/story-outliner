@@ -3,6 +3,7 @@ using RTLTMPro;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -54,6 +55,20 @@ public class NoteElement : GridElement
         for (int i = 0; i < _insideElements.Count; i++)
         {
             _insideElements[i].transform.position += new Vector3(offset.x, offset.y, 0);
+        }
+    }
+
+    public override void DynamicResizeCallback(Vector2 dragWorld)
+    {
+        base.DynamicResizeCallback(dragWorld);
+
+        var children = transform.parent.GetComponentsInChildren<NoteElement>()
+            .OrderByDescending(x => x.Rect.width * x.Rect.height)
+            .ToArray();
+
+        for (int i = 0; i < children.Length; i++)
+        {
+            children[i].Transform.SetSiblingIndex(i);
         }
     }
 

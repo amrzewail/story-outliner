@@ -4,26 +4,31 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
+using SFB;
+using System.Threading.Tasks;
 
 public class Controller : MonoBehaviour
 {
     [SerializeField] GridElement _storyEventPrefab;
     [SerializeField] GridElement _characterPrefab;
     [SerializeField] GridElement _notePrefab;
-    [SerializeField] TMP_InputField _dataInputField;
+    [SerializeField] TextMeshProUGUI _currentStoryText;
+
     public GridElement storyEventPrefab => _storyEventPrefab;
     public GridElement characterPrefab => _characterPrefab;
     public GridElement notePrefab => _notePrefab;
 
     public static Controller Instance { get; private set; }
 
-    private static string SavePath
+    private string _currentFile;
+
+    private string CurrentFile
     {
-        get
+        get => _currentFile;
+        set
         {
-            var dir = new System.IO.DirectoryInfo(Application.dataPath);
-            string parentDir = dir.Parent.FullName;
-            return $"{parentDir}/Stories";
+            _currentFile = value;
+            _currentStoryText.text = value;
         }
     }
 
@@ -36,7 +41,7 @@ public class Controller : MonoBehaviour
     {
         Application.targetFrameRate = 120;
 
-        _dataInputField.text = PlayerPrefs.GetString("DATA", "data");
+        CurrentFile = string.Empty;
     }
 
     public void AddStoryEventCallback()
@@ -55,35 +60,73 @@ public class Controller : MonoBehaviour
         GridViewport.Instance.InstantiateElement(notePrefab);
     }
 
+    public void NewCallback()
+    {
+        CurrentFile = string.Empty;
+        Serializer.Deserialize("{}");
+    }
 
     public async void LoadCallback()
     {
-        if (File.Exists($"{SavePath}/{_dataInputField.text}.json"))
-        {
-            Serializer.Deserialize(File.ReadAllText($"{SavePath}/{_dataInputField.text}.json"));
+        string lastFile = PlayerPrefs.GetString("LAST_FILE", "");
+        string directory = !string.IsNullOrEmpty(lastFile) ? Path.GetDirectoryName(lastFile) : "";
 
-            PlayerPrefs.SetString("DATA", _dataInputField.text);
-            PlayerPrefs.Save();
-        }
-        //else
-        //{
-        //    GridViewport.Instance.Clear();
-        //    ArrowController.Instance.Clear();
+        await Task.Delay(100);
 
-        //    if (!string.IsNullOrEmpty(_dataInputField.text))
-        //    {
-        //        SaveCallback();
-        //    }
-        //}
+        string[] files = StandaloneFileBrowser.OpenFilePanel("Select a story", directory, "story", false);
+
+        if (files == null || files.Length == 0) return;
+
+        CurrentFile = files[0];
+
+        var data = File.ReadAllText(CurrentFile);
+
+        Serializer.Deserialize(data);
+
+        PlayerPrefs.SetString("LAST_FILE", CurrentFile);
+        PlayerPrefs.Save();
     }
-
 
     public void SaveCallback()
     {
-        var str = Serializer.Serialize();
-        File.WriteAllText($"{SavePath}/{_dataInputField.text}.json", str);
+        string lastFile = PlayerPrefs.GetString("LAST_FILE", "");
+        string directory = !string.IsNullOrEmpty(lastFile) ? Path.GetDirectoryName(lastFile) : "";
 
-        PlayerPrefs.SetString("DATA", _dataInputField.text);
+        if (string.IsNullOrEmpty(CurrentFile))
+        {
+            SaveAsCallback();
+            return;
+        }
+
+        if (string.IsNullOrEmpty(CurrentFile)) return;
+
+        if (File.Exists(CurrentFile))
+        {
+            File.Copy(CurrentFile, CurrentFile + ".bak", true);
+        }
+
+        var str = Serializer.Serialize();
+        File.WriteAllText(CurrentFile, str);
+
+        PlayerPrefs.SetString("LAST_FILE", CurrentFile);
         PlayerPrefs.Save();
     }
+
+
+    public async void SaveAsCallback()
+    {
+        string lastFile = PlayerPrefs.GetString("LAST_FILE", "");
+        string directory = !string.IsNullOrEmpty(lastFile) ? Path.GetDirectoryName(lastFile) : "";
+
+        await Task.Delay(100);
+
+        var newFile = StandaloneFileBrowser.SaveFilePanel("Save a story", directory, "New Story", "story");
+
+        if (string.IsNullOrEmpty(newFile)) return;
+
+        CurrentFile = newFile;
+        SaveCallback();
+    }
+
+
 }

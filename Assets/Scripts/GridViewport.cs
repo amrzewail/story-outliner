@@ -123,6 +123,9 @@ public class GridViewport : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         data.storyEvents = new List<string>();
         data.characters = new List<string>();
         data.notes = new List<string>();
+
+        _notes = _notes.OrderByDescending(e => e.Rect.width * e.Rect.height).ToList();
+
         foreach(var e in _storyEvents) data.storyEvents.Add(e.Serialize());
         foreach(var e in _characters) data.characters.Add(e.Serialize());
         foreach(var e in _notes) data.notes.Add(e.Serialize());
@@ -132,6 +135,8 @@ public class GridViewport : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     public virtual void Deserialize(string str)
     {
         Clear();
+
+        if (string.IsNullOrEmpty(str)) return;
 
         Data data = JsonConvert.DeserializeObject<Data>(str);
 

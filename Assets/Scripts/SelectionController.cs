@@ -138,7 +138,7 @@ public class SelectionController : MonoBehaviour, IPointerDownHandler, IPointerU
         if (eventData.button == PointerEventData.InputButton.Left)
         {
 
-            var elements = GridViewport.Instance.GetAllElements().Where(x => Contains(_selectionRect, x.transform.position));
+            var elements = GridViewport.Instance.GetAllElements().Where(x => Contains(_selectionRect, x.Rect));
 
             if (elements.Any())
             {
@@ -149,14 +149,13 @@ public class SelectionController : MonoBehaviour, IPointerDownHandler, IPointerU
         }
     }
 
-    private bool Contains(Rect rect, Vector2 point)
+
+    private bool Contains(Rect rect, Rect element)
     {
-        if(rect.xMin <= point.x && rect.xMax >= point.x)
+        var elementRect = element;
+        if (elementRect.x > rect.x && elementRect.y < rect.y && (elementRect.x + elementRect.width) < (rect.x + rect.width) && (elementRect.y - elementRect.height) > (rect.y - rect.height))
         {
-            if(rect.yMin >= point.y && rect.yMin - rect.height <= point.y)
-            {
-                return true;
-            }
+            return true;
         }
         return false;
     }

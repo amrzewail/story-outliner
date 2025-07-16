@@ -220,6 +220,14 @@ PrefabInstance:
       propertyPath: m_Color.a
       value: 0.49803922
       objectReference: {fileID: 0}
+    - target: {fileID: 6363793072874045909, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6363793072874045909, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6363793073562287896, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
       propertyPath: m_AnchorMin.y
       value: 1

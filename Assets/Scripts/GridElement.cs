@@ -227,7 +227,7 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
         _resizeOffset = (Vector2)mousePosition - new Vector2(Rect.x + Rect.width, Rect.y - Rect.height);
     }
 
-    public void DynamicResizeCallback(Vector2 dragWorld)
+    public virtual void DynamicResizeCallback(Vector2 dragWorld)
     {
         _size = Size.Dynamic;
         var rect = Rect;
@@ -235,8 +235,6 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
         size += new Vector2(dragWorld.x, -dragWorld.y);
         rect.size = size;
         Rect = rect;
-
-        Debug.Log(dragWorld);
     }
 
     public virtual void Select()

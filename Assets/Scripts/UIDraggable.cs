@@ -31,6 +31,9 @@ public class UIDraggable : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     public void OnPointerDown(PointerEventData eventData)
     {
+        if (eventData.button != PointerEventData.InputButton.Left)
+            return;
+        
         _isDragging = true;
         _lastMousePosition = Input.mousePosition;
         OnStartDrag?.Invoke();
@@ -39,6 +42,9 @@ public class UIDraggable : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     public void OnPointerUp(PointerEventData eventData)
     {
+        if (eventData.button != PointerEventData.InputButton.Left)
+            return;
+
         _isDragging = false;
         OnEndDrag?.Invoke();
     }
