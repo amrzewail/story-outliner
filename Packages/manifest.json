@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "com.elringus.unitygoogledrive": "https://github.com/Elringus/UnityGoogleDrive.git#package",
+    "com.moths.core": "https://github.com/amrzewail/moths.core.git",
     "com.moths.tweens": "https://github.com/amrzewail/moths.tweens.git",
     "com.unity.2d.animation": "10.1.4",
     "com.unity.2d.pixel-perfect": "5.0.3",

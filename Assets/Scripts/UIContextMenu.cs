@@ -1,5 +1,7 @@
+using Moths.Tweens.Extensions;
 using UnityEngine;
 
+[RequireComponent(typeof(CanvasGroup))]
 public class UIContextMenu : MonoBehaviour
 {
     private static UIContextMenu _current;
@@ -14,6 +16,8 @@ public class UIContextMenu : MonoBehaviour
 
     private void Awake()
     {
+        if (Time.frameCount > 0) return;
+
         gameObject.SetActive(false);
     }
 
@@ -39,6 +43,11 @@ public class UIContextMenu : MonoBehaviour
         {
             _current = this;
             _openFrameIndex = Time.frameCount;
+
+            GetComponent<CanvasGroup>().alpha = 0;
+            GetComponent<CanvasGroup>().TweenAlpha(1)
+                .SetDuration(0.15f)
+                .Play();
         }
     }
 

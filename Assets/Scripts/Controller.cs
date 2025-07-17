@@ -60,6 +60,16 @@ public class Controller : MonoBehaviour
         GridViewport.Instance.InstantiateElement(notePrefab);
     }
 
+    public void DeleteSelectionCallback()
+    {
+        SelectionController.Instance.DeleteSelection();
+    }
+
+    public void MoveSelectionCallback()
+    {
+        SelectionController.Instance.MoveSelection();
+    }
+
     public void NewCallback()
     {
         CurrentFile = string.Empty;

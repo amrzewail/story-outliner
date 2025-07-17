@@ -7,6 +7,13 @@
       "dependencies": {},
       "hash": "fe300dd53763b8304df29a1d1b5a0b299ba01650"
     },
+    "com.moths.core": {
+      "version": "https://github.com/amrzewail/moths.core.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "df9e577b37c02b3b1d3e7e7d32f36a4ad8d51166"
+    },
     "com.moths.tweens": {
       "version": "https://github.com/amrzewail/moths.tweens.git",
       "depth": 0,

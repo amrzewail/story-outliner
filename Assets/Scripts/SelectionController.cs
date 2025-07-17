@@ -17,6 +17,15 @@ public class SelectionController : MonoBehaviour, IPointerDownHandler, IPointerU
 
     private List<GridElement> _selectedElements;
 
+    public static SelectionController Instance { get; private set; }
+
+    public bool HasSelection => _selectedElements != null && _selectedElements.Count > 0;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
+
     private void Start()
     {
         _selectionImage = new GameObject("Selection Box", typeof(Image)).GetComponent<Image>();
@@ -60,24 +69,12 @@ public class SelectionController : MonoBehaviour, IPointerDownHandler, IPointerU
 
         if (Input.GetKeyDown(KeyCode.G))
         {
-            if (_selectedElements != null && _selectedElements.Count > 0)
-            {
-                _isMoving = !_isMoving;
-                _lastMouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            }
+            MoveSelection();
         }
 
         if (Input.GetKeyDown(KeyCode.Delete))
         {
-            if (_selectedElements != null && _selectedElements.Count > 0)
-            {
-                foreach(var element in _selectedElements)
-                {
-                    GridViewport.Instance.DeleteElement(element);
-                }
-                _selectedElements.Clear();
-                _isMoving = false;
-            }
+            DeleteSelection();
         }
 
 
@@ -98,6 +95,28 @@ public class SelectionController : MonoBehaviour, IPointerDownHandler, IPointerU
             {
                 _isMoving = false;
             }
+        }
+    }
+
+    public void MoveSelection()
+    {
+        if (HasSelection)
+        {
+            _isMoving = !_isMoving;
+            _lastMouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        }
+    }
+
+    public void DeleteSelection()
+    {
+        if (HasSelection)
+        {
+            foreach (var element in _selectedElements)
+            {
+                GridViewport.Instance.DeleteElement(element);
+            }
+            _selectedElements.Clear();
+            _isMoving = false;
         }
     }
 
