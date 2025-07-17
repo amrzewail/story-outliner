@@ -1,11 +1,14 @@
+using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using RTLTMPro;
+using SFB;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class NoteElement : GridElement
 {
@@ -20,10 +23,12 @@ public class NoteElement : GridElement
     private struct Data
     {
         public string text;
+        public string image;
     }
 
 
     [SerializeField] TMP_InputField text;
+    [SerializeField] Image _image;
 
     private List<GridElement> _insideElements = new List<GridElement>();
 
@@ -74,6 +79,36 @@ public class NoteElement : GridElement
         }
     }
 
+    public async void LoadImageCallback()
+    {
+        if (_image.sprite)
+        {
+            _image.sprite = null;
+            _image.enabled = false;
+            return;
+        }
+
+        var cameraDisable = CameraController.Instance.disable;
+        CameraController.Instance.disable = true;
+
+        var paths = StandaloneFileBrowser.OpenFilePanel("Select an image", "", new[] { new ExtensionFilter("Image Files", "jpg", "png") }, false);
+        if (paths == null || paths.Length == 0) return;
+        var sprite = SpriteLoader.LoadSpriteFromFile(paths[0]);
+        if (sprite)
+        {
+            _image.enabled = true;
+            _image.sprite = sprite;
+        }
+
+        await UniTask.NextFrame();
+        await UniTask.NextFrame();
+        await UniTask.NextFrame();
+        await UniTask.NextFrame();
+        await UniTask.NextFrame();
+
+        CameraController.Instance.disable = cameraDisable;
+    }
+
     public override string Serialize()
     {
         Output output = new Output();
@@ -89,6 +124,11 @@ public class NoteElement : GridElement
             data.text = text.textComponent.text;
         }
 
+        if (_image.sprite)
+        {
+            data.image = SpriteLoader.Serialize(_image.sprite);
+        }
+
         output.self = data;
 
         return JsonConvert.SerializeObject(output);
@@ -100,5 +140,23 @@ public class NoteElement : GridElement
         base.Deserialize(output.parent);
 
         text.text = output.self.text;
+        if (!string.IsNullOrEmpty(output.self.image))
+        {
+            _image.enabled = true;
+            if ((_image.sprite = SpriteLoader.Deserialize(output.self.image)))
+            {
+                var color = GetColor();
+                color.a = 1;
+                _image.color = color;
+            }
+            else
+            {
+                _image.enabled = false;
+            }
+        }
+        else
+        {
+            _image.enabled = false;
+        }
     }
 }
