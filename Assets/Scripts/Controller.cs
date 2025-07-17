@@ -139,4 +139,10 @@ public class Controller : MonoBehaviour
     }
 
 
+    public void MoveToLayerCallback()
+    {
+        var selection = SelectionController.Instance.Selection;
+        if (selection.Count == 0) return;
+        for (int i = 0; i < selection.Count; i++) LayerManager.AddElementToSelectedLayer(selection[i].guid);
+    }
 }

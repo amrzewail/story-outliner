@@ -27,12 +27,14 @@ public class NoteElement : GridElement
 
     private List<GridElement> _insideElements = new List<GridElement>();
 
+    public IReadOnlyList<GridElement> InsideElements => _insideElements;
+
     public void ArrowClickCallback()
     {
         ConnectionController.Instance.PrepareConnection(guid, ConnectionType.OneWay);
     }
 
-    protected override void OnStartMove()
+    public override void OnStartMove()
     {
         _insideElements.Clear();
         var elements = GridViewport.Instance.GetAllElements();
@@ -50,7 +52,7 @@ public class NoteElement : GridElement
         }
     }
 
-    protected override void OnMove(Vector2 offset)
+    public override void OnMove(Vector2 offset)
     {
         for (int i = 0; i < _insideElements.Count; i++)
         {

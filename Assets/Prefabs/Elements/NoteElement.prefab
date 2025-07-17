@@ -261,6 +261,18 @@ PrefabInstance:
       value: MoveClickCallback
       objectReference: {fileID: 0}
     - target: {fileID: 7688900721249399029, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7688900721249399029, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7688900721249399029, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -60
+      objectReference: {fileID: 0}
+    - target: {fileID: 7688900721249399029, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: -29.992
       objectReference: {fileID: 0}
@@ -280,6 +292,98 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: NoteElement, Assembly-CSharp
       objectReference: {fileID: 0}
+    - target: {fileID: 8968291868936440697, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -29.992004
+      objectReference: {fileID: 0}
+    - target: {fileID: 9027814157060979427, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnDrag.m_PersistentCalls.m_Calls.Array.size
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9027814157060979427, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnEndDrag.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9027814157060979427, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnDragWorld.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9027814157060979427, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnStartDrag.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9027814157060979427, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnEndDrag.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9027814157060979427, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnDrag.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9027814157060979427, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnEndDrag.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 6335633716650668220}
+    - target: {fileID: 9027814157060979427, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnStartDrag.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9027814157060979427, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnDragWorld.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 6335633716650668220}
+    - target: {fileID: 9027814157060979427, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnStartDrag.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 6335633716650668220}
+    - target: {fileID: 9027814157060979427, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnEndDrag.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9027814157060979427, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnEndDrag.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: MoveDragEndCallback
+      objectReference: {fileID: 0}
+    - target: {fileID: 9027814157060979427, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnDragWorld.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9027814157060979427, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnStartDrag.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 9027814157060979427, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnDragWorld.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: MoveDragCallback
+      objectReference: {fileID: 0}
+    - target: {fileID: 9027814157060979427, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnStartDrag.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: MoveDragStartCallback
+      objectReference: {fileID: 0}
+    - target: {fileID: 9027814157060979427, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnEndDrag.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: GridElement, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 9027814157060979427, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnDragWorld.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: GridElement, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 9027814157060979427, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnStartDrag.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: GridElement, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 9027814157060979427, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnEndDrag.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 9027814157060979427, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnDragWorld.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 9027814157060979427, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+      propertyPath: OnStartDrag.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 6752888975440554294, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
     m_RemovedGameObjects: []
@@ -289,6 +393,16 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 6335633716650668220}
   m_SourcePrefab: {fileID: 100100000, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+--- !u!225 &956015171486725398 stripped
+CanvasGroup:
+  m_CorrespondingSourceObject: {fileID: 961958809400049350, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+  m_PrefabInstance: {fileID: 8412137886141392}
+  m_PrefabAsset: {fileID: 0}
+--- !u!225 &4733132892819854717 stripped
+CanvasGroup:
+  m_CorrespondingSourceObject: {fileID: 4734010546410479277, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
+  m_PrefabInstance: {fileID: 8412137886141392}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &6362846156644693193 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6363793073562287897, guid: ab73f27d2e8fe5e4b8b5af68318b00ec, type: 3}
@@ -317,4 +431,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15084ff067b88554f985f01177c966b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _buttonsGroup: {fileID: 956015171486725398}
+  _inputsGroup: {fileID: 4733132892819854717}
   text: {fileID: 6362846156644693193}

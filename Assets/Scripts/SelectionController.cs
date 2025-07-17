@@ -15,11 +15,14 @@ public class SelectionController : MonoBehaviour, IPointerDownHandler, IPointerU
     private bool _isMoving = false;
     private Vector2 _lastMouseWorldPosition;
 
-    private List<GridElement> _selectedElements;
+    private List<GridElement> _selectedElements = new List<GridElement>();
+    private HashSet<GridElement> _selectedMoveExclusions = new HashSet<GridElement>();
 
     public static SelectionController Instance { get; private set; }
 
     public bool HasSelection => _selectedElements != null && _selectedElements.Count > 0;
+
+    public IReadOnlyList<GridElement> Selection => _selectedElements;
 
     private void Awake()
     {
@@ -39,7 +42,29 @@ public class SelectionController : MonoBehaviour, IPointerDownHandler, IPointerU
 
     private void Update()
     {
-        if (!IsMouseWithinScreen()) return;
+        if (!CameraController.IsMouseWithinScreen()) return;
+
+
+        if (Input.GetMouseButtonDown(0) && CameraController.IsMouseWithinViewport())
+        {
+            _lastMouseWorldPosition = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        }
+
+        if (Input.GetMouseButtonUp(0) && !_isSelecting)
+        {
+            var mousePosition = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            if ((mousePosition - _lastMouseWorldPosition).sqrMagnitude < 0.5f * 0.5f)
+            {
+                if (_selectedElements.Count > 0) _selectedElements.ForEach(x => x.Deselect());
+                _selectedElements.Clear();
+                var elements = GridViewport.Instance.GetAllElements()
+                    .Where(x => Contains(x.Rect, new Rect(mousePosition, Vector2.zero)))
+                    .ToList();
+                elements.Sort((x1, x2) => ((x1 is NoteElement ? 0 : 10000000) + x1.transform.GetSiblingIndex()).CompareTo((x2 is NoteElement ? 0 : 10000000) + x2.transform.GetSiblingIndex()));
+
+                if (elements.Count > 0) Select(elements.Last());
+            }
+        }
 
         if (_isSelecting)
         {
@@ -67,12 +92,12 @@ public class SelectionController : MonoBehaviour, IPointerDownHandler, IPointerU
             _selectionRect.size = _selectionImage.rectTransform.sizeDelta = size;
         }
 
-        if (Input.GetKeyDown(KeyCode.G))
+        if (Input.GetKeyDown(KeyCode.G) && CameraController.IsMouseWithinViewport())
         {
             MoveSelection();
         }
 
-        if (Input.GetKeyDown(KeyCode.Delete))
+        if (Input.GetKeyDown(KeyCode.Delete) && CameraController.IsMouseWithinViewport())
         {
             DeleteSelection();
         }
@@ -86,7 +111,23 @@ public class SelectionController : MonoBehaviour, IPointerDownHandler, IPointerU
 
             if(_selectedElements != null)
             {
-                _selectedElements.ForEach(x => x.transform.position += (Vector3)delta);
+                _selectedMoveExclusions.Clear();
+
+                for (int i = 0; i < _selectedElements.Count; i++)
+                {
+                    if (_selectedElements[i] is not NoteElement) continue;
+                    var insideElements = ((NoteElement)_selectedElements[i]).InsideElements;
+                    for (int j = 0; j < insideElements.Count; j++) _selectedMoveExclusions.Add(insideElements[j]);
+                }
+
+                for (int i = 0; i < _selectedElements.Count; i++)
+                {
+                    var x = _selectedElements[i];
+                    if (_selectedMoveExclusions.Contains(x)) continue;
+
+                    x.transform.position += (Vector3)delta;
+                    x.OnMove(delta);
+                }
             }
 
             _lastMouseWorldPosition = currentMouseWorldPosition;
@@ -104,6 +145,17 @@ public class SelectionController : MonoBehaviour, IPointerDownHandler, IPointerU
         {
             _isMoving = !_isMoving;
             _lastMouseWorldPosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            if (_selectedElements != null)
+            {
+                if (_isMoving)
+                {
+                    _selectedElements.ForEach(x => x.OnStartMove());
+                }
+                else
+                {
+                    _selectedElements.ForEach(x => x.OnEndMove());
+                }
+            }
         }
     }
 
@@ -118,6 +170,13 @@ public class SelectionController : MonoBehaviour, IPointerDownHandler, IPointerU
             _selectedElements.Clear();
             _isMoving = false;
         }
+    }
+
+    public void Select(GridElement element)
+    {
+        _selectedElements.Clear();
+        _selectedElements.Add(element);
+        element.Select();
     }
 
     public void OnPointerDown(PointerEventData eventData)
@@ -137,7 +196,10 @@ public class SelectionController : MonoBehaviour, IPointerDownHandler, IPointerU
 
             if (_selectedElements != null)
             {
-                _selectedElements.ForEach(x => x.Deselect());
+                _selectedElements.ForEach(x =>
+                {
+                    if (x) x.Deselect();
+                });
                 _selectedElements.Clear();
                 _isMoving = false;
             }
@@ -147,16 +209,12 @@ public class SelectionController : MonoBehaviour, IPointerDownHandler, IPointerU
 
     public void OnPointerUp(PointerEventData eventData)
     {
-
-        Debug.Log("pointer up selection");
-
         _isSelecting = false;
 
         _selectionImage.enabled = false;
 
         if (eventData.button == PointerEventData.InputButton.Left)
         {
-
             var elements = GridViewport.Instance.GetAllElements().Where(x => Contains(_selectionRect, x.Rect));
 
             if (elements.Any())
@@ -164,7 +222,6 @@ public class SelectionController : MonoBehaviour, IPointerDownHandler, IPointerU
                 _selectedElements = elements.ToList();
                 _selectedElements.ForEach(x => x.Select());
             }
-
         }
     }
 
@@ -177,13 +234,5 @@ public class SelectionController : MonoBehaviour, IPointerDownHandler, IPointerU
             return true;
         }
         return false;
-    }
-
-
-    private bool IsMouseWithinScreen()
-    {
-        Vector3 pos = Input.mousePosition;
-        return pos.x >= 0 && pos.x <= Screen.width &&
-               pos.y >= 0 && pos.y <= Screen.height;
     }
 }

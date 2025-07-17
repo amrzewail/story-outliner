@@ -179,9 +179,15 @@ public partial class ConnectionController : MonoBehaviour
                     GridViewport.Instance.SetBehind(_arrows[connection].transform);
                 }
 
-                Vector2 direction = element2.Transform.position - element1.Transform.position;
-                float angle = Mathf.Rad2Deg * Mathf.Atan2(direction.y, direction.x);
-                _arrows[connection].Set(element1.Transform.position, element2.Transform.position, element1.GetConnectionOffset(angle, connection.type), element2.GetConnectionOffset(angle, connection.type));
+                var arrowVisible = element1.gameObject.activeSelf && element2.gameObject.activeSelf;
+                _arrows[connection].gameObject.SetActive(arrowVisible);
+
+                if (arrowVisible)
+                {
+                    Vector2 direction = element2.Transform.position - element1.Transform.position;
+                    float angle = Mathf.Rad2Deg * Mathf.Atan2(direction.y, direction.x);
+                    _arrows[connection].Set(element1.Transform.position, element2.Transform.position, element1.GetConnectionOffset(angle, connection.type), element2.GetConnectionOffset(angle, connection.type));
+                }
             }
             else
             {

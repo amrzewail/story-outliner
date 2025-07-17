@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Object = UnityEngine.Object;
 
-public class GridViewport : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class GridViewport : MonoBehaviour
 {
     [Serializable]
     public class Data
@@ -32,6 +32,30 @@ public class GridViewport : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
     private void Start()
     {
         Instance = this;
+    }
+
+    private void DeserializeElement(List<string> serializedList, GridElement prefab)
+    {
+        if (serializedList == null) return;
+        foreach (var e in serializedList)
+        {
+            var element = InstantiateElement(prefab);
+            _allElements.Remove(element.guid);
+            element.Deserialize(e);
+            _allElements.TryAdd(element.guid, element);
+        }
+    }
+
+    public void Clear()
+    {
+        foreach (var e in _allElements)
+        {
+            Destroy(e.Value.gameObject);
+        }
+        _storyEvents.Clear();
+        _characters.Clear();
+        _notes.Clear();
+        _allElements.Clear();
     }
 
     public GridElement InstantiateElement(GridElement g)
@@ -61,6 +85,11 @@ public class GridViewport : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         }
 
         _allElements[g.guid] = g;
+
+        if (LayerManager.SelectedLayer != null)
+        {
+            LayerManager.AddElementToSelectedLayer(g.guid);
+        }
 
         return g;
     }
@@ -107,15 +136,6 @@ public class GridViewport : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         target.SetSiblingIndex(transform.GetSiblingIndex() + 2);
     }
 
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        //CameraController.Instance.disable = true;
-    }
-
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        //CameraController.Instance.disable = false;
-    }
 
     public virtual string Serialize()
     {
@@ -143,29 +163,5 @@ public class GridViewport : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
         DeserializeElement(data.storyEvents, Controller.Instance.storyEventPrefab);
         DeserializeElement(data.characters, Controller.Instance.characterPrefab);
         DeserializeElement(data.notes, Controller.Instance.notePrefab);
-    }
-
-    private void DeserializeElement(List<string> serializedList, GridElement prefab)
-    {
-        if (serializedList == null) return;
-        foreach (var e in serializedList)
-        {
-            var element = InstantiateElement(prefab);
-            _allElements.Remove(element.guid);
-            element.Deserialize(e);
-            _allElements.TryAdd(element.guid, element);
-        }
-    }
-
-    public void Clear()
-    {
-        foreach (var e in _allElements)
-        {
-            Destroy(e.Value.gameObject);
-        }
-        _storyEvents.Clear();
-        _characters.Clear();
-        _notes.Clear();
-        _allElements.Clear();
     }
 }

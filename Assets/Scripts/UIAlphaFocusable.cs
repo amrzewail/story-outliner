@@ -10,7 +10,7 @@ public class UIAlphaFocusable : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
     private CanvasGroup _canvasGroup;
 
-    private void Start()
+    private void Awake()
     {
         _canvasGroup = GetComponent<CanvasGroup>();
         _canvasGroup.alpha = _blurAlpha;

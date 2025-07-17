@@ -72,6 +72,8 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
     }
     public Transform Transform { get; private set; }
 
+    [SerializeField] CanvasGroup _buttonsGroup;
+    [SerializeField] CanvasGroup _inputsGroup;
 
     protected bool _isMoving = false;
 
@@ -87,6 +89,27 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
     private void Awake()
     {
         Transform = transform;
+
+
+        _inputsGroup.interactable = false;
+
+        LayerManager.LayersUpdated += LayersUpdatedCallback;
+    }
+
+    private void OnDestroy()
+    {
+        LayerManager.LayersUpdated -= LayersUpdatedCallback;
+    }
+
+    private void LayersUpdatedCallback()
+    {
+        var layer = LayerManager.GetElementLayer(guid);
+        var interactable = layer == LayerManager.SelectedLayer;
+        _buttonsGroup.interactable = interactable;
+        _buttonsGroup.alpha = interactable ? 1 : 0;
+        _inputsGroup.interactable = interactable;
+        GetComponent<CanvasGroup>().alpha = interactable ? 1 : 0.65f;
+        GetComponent<CanvasGroup>().blocksRaycasts = interactable;
     }
 
     protected virtual void Start()
@@ -203,14 +226,15 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
         return colorable.GetColor();
     }
 
-    protected virtual void OnStartMove() { }
+    public virtual void OnStartMove() { }
 
-    protected virtual void OnEndMove() { }
-    protected virtual void OnMove(Vector2 offset) { }
+    public virtual void OnEndMove() { }
+    public virtual void OnMove(Vector2 offset) { }
 
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        Debug.Log("pointer click!!");
     }
 
 
@@ -240,11 +264,19 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
     public virtual void Select()
     {
         Transform.Find("Selection").gameObject.SetActive(true);
+        _buttonsGroup.gameObject.SetActive(true);
+
+        var layer = LayerManager.GetElementLayer(guid);
+        var interactable = layer == LayerManager.SelectedLayer;
+        _inputsGroup.interactable = interactable;
     }
 
     public virtual void Deselect()
     {
         Transform.Find("Selection").gameObject.SetActive(false);
+        _buttonsGroup.gameObject.SetActive(false);
+
+        _inputsGroup.interactable = false;
     }
 
     public virtual float GetConnectionOffset(float angle, ConnectionType type)
