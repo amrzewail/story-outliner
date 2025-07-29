@@ -10,6 +10,12 @@ public class UIAlphaFocusable : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
     private CanvasGroup _canvasGroup;
 
+    public float blurAlpha
+    {
+        get => _blurAlpha;
+        set => _blurAlpha = value;
+    }
+
     private void Awake()
     {
         _canvasGroup = GetComponent<CanvasGroup>();
@@ -21,6 +27,13 @@ public class UIAlphaFocusable : MonoBehaviour, IPointerEnterHandler, IPointerExi
         _canvasGroup.alpha = _blurAlpha;
     }
 
+    public void Blur()
+    {
+        _canvasGroup.TweenAlpha(_blurAlpha)
+            .SetDuration(0.15f)
+            .Play();
+    }
+
     public void OnPointerEnter(PointerEventData eventData)
     {
         _canvasGroup.TweenAlpha(_focusAlpha)
@@ -30,8 +43,6 @@ public class UIAlphaFocusable : MonoBehaviour, IPointerEnterHandler, IPointerExi
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        _canvasGroup.TweenAlpha(_blurAlpha)
-            .SetDuration(0.15f)
-            .Play();
+        Blur();
     }
 }

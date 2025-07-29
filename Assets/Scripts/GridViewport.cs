@@ -19,6 +19,7 @@ public class GridViewport : MonoBehaviour
         public List<string> storyEvents;
         public List<string> characters;
         public List<string> notes;
+        public List<string> timelines;
     }
 
     public static GridViewport Instance { get; private set; }
@@ -26,6 +27,7 @@ public class GridViewport : MonoBehaviour
     private List<GridElement> _storyEvents = new List<GridElement>();
     private List<GridElement> _characters = new List<GridElement>();
     private List<GridElement> _notes = new List<GridElement>();
+    private List<GridElement> _timelines = new List<GridElement>();
 
     private Dictionary<Guid, GridElement> _allElements = new Dictionary<Guid, GridElement>();
 
@@ -55,6 +57,7 @@ public class GridViewport : MonoBehaviour
         _storyEvents.Clear();
         _characters.Clear();
         _notes.Clear();
+        _timelines.Clear();
         _allElements.Clear();
     }
 
@@ -62,6 +65,8 @@ public class GridViewport : MonoBehaviour
     {
         var parent = transform.parent;
         if (g is NoteElement) parent = parent.Find("Notes");
+        if (g is TimelineElement) parent = parent.Find("Notes");
+
         g = Instantiate(g, parent).GetComponent<GridElement>();
 
         var position = g.transform.position;
@@ -83,6 +88,10 @@ public class GridViewport : MonoBehaviour
         {
             _notes.Add(g);
         }
+        else if (g is TimelineElement)
+        {
+            _timelines.Add(g);
+        }
 
         _allElements[g.guid] = g;
 
@@ -102,6 +111,8 @@ public class GridViewport : MonoBehaviour
 
     public void DeleteElement(GridElement g)
     {
+        if (!g) return;
+
         if (g is StoryEventElement)
         {
             _storyEvents.Remove(g);
@@ -113,6 +124,10 @@ public class GridViewport : MonoBehaviour
         else if (g is NoteElement)
         {
             _notes.Remove(g);
+        }
+        else if (g is TimelineElement)
+        {
+            _timelines.Remove(g);
         }
 
         _allElements.Remove(g.guid);
@@ -143,12 +158,15 @@ public class GridViewport : MonoBehaviour
         data.storyEvents = new List<string>();
         data.characters = new List<string>();
         data.notes = new List<string>();
+        data.timelines = new List<string>();
 
         _notes = _notes.OrderByDescending(e => e.Rect.width * e.Rect.height).ToList();
 
         foreach(var e in _storyEvents) data.storyEvents.Add(e.Serialize());
         foreach(var e in _characters) data.characters.Add(e.Serialize());
         foreach(var e in _notes) data.notes.Add(e.Serialize());
+        foreach(var e in _timelines) data.timelines.Add(e.Serialize());
+
         return JsonConvert.SerializeObject(data);
     }
 
@@ -163,5 +181,6 @@ public class GridViewport : MonoBehaviour
         DeserializeElement(data.storyEvents, Controller.Instance.storyEventPrefab);
         DeserializeElement(data.characters, Controller.Instance.characterPrefab);
         DeserializeElement(data.notes, Controller.Instance.notePrefab);
+        DeserializeElement(data.timelines, Controller.Instance.timelinePrefab);
     }
 }

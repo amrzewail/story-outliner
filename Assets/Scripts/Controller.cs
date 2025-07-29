@@ -12,11 +12,13 @@ public class Controller : MonoBehaviour
     [SerializeField] GridElement _storyEventPrefab;
     [SerializeField] GridElement _characterPrefab;
     [SerializeField] GridElement _notePrefab;
+    [SerializeField] GridElement _timelinePrefab;
     [SerializeField] TextMeshProUGUI _currentStoryText;
 
     public GridElement storyEventPrefab => _storyEventPrefab;
     public GridElement characterPrefab => _characterPrefab;
     public GridElement notePrefab => _notePrefab;
+    public GridElement timelinePrefab => _timelinePrefab;
 
     public static Controller Instance { get; private set; }
 
@@ -58,6 +60,11 @@ public class Controller : MonoBehaviour
     {
 
         GridViewport.Instance.InstantiateElement(notePrefab);
+    }
+    public void AddTimelineCallback()
+    {
+
+        GridViewport.Instance.InstantiateElement(timelinePrefab);
     }
 
     public void DeleteSelectionCallback()

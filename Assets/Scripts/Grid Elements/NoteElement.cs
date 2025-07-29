@@ -34,6 +34,8 @@ public class NoteElement : GridElement
 
     public IReadOnlyList<GridElement> InsideElements => _insideElements;
 
+    public override int SortOrder { get => -1000000; }
+
     public void ArrowClickCallback()
     {
         ConnectionController.Instance.PrepareConnection(guid, ConnectionType.OneWay);
@@ -49,8 +51,10 @@ public class NoteElement : GridElement
         {
             var element = elements[i];
             if (element == this) continue;
+            if (!element.gameObject.activeSelf) continue;
             var elementRect = element.Rect;
-            if (elementRect.x > rect.x && elementRect.y < rect.y && (elementRect.x + elementRect.width) < (rect.x + rect.width) && (elementRect.y - elementRect.height) > (rect.y - rect.height))
+            elementRect.size = new Vector2(0, 0);
+            if (rect.Contains(elementRect))
             {
                 _insideElements.Add(element);
             }
@@ -65,11 +69,11 @@ public class NoteElement : GridElement
         }
     }
 
-    public override void DynamicResizeCallback(Vector2 dragWorld)
+    public override void DynamicResizeCallback(Vector2 dragWorld, RectTransform target)
     {
-        base.DynamicResizeCallback(dragWorld);
+        base.DynamicResizeCallback(dragWorld, target);
 
-        var children = transform.parent.GetComponentsInChildren<NoteElement>()
+        var children = transform.parent.GetComponentsInChildren<GridElement>()
             .OrderByDescending(x => x.Rect.width * x.Rect.height)
             .ToArray();
 
@@ -92,12 +96,14 @@ public class NoteElement : GridElement
         CameraController.Instance.disable = true;
 
         var paths = StandaloneFileBrowser.OpenFilePanel("Select an image", "", new[] { new ExtensionFilter("Image Files", "jpg", "png") }, false);
-        if (paths == null || paths.Length == 0) return;
-        var sprite = SpriteLoader.LoadSpriteFromFile(paths[0]);
-        if (sprite)
+        if (paths != null && paths.Length > 0)
         {
-            _image.enabled = true;
-            _image.sprite = sprite;
+            var sprite = SpriteLoader.LoadSpriteFromFile(paths[0]);
+            if (sprite)
+            {
+                _image.enabled = true;
+                _image.sprite = sprite;
+            }
         }
 
         await UniTask.NextFrame();

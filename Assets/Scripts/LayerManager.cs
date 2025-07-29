@@ -52,11 +52,13 @@ public static class LayerManager
     public static void Deserialize(string str)
     {
         SelectedLayer = null;
-
         _layers.Clear();
-        if (string.IsNullOrEmpty(str)) return;
-        List<SerializableLayer> serializables = JsonConvert.DeserializeObject<List<SerializableLayer>>(str);
-        for (int i = 0; i < serializables.Count; i++) _layers.Add(serializables[i]);
+
+        if (!string.IsNullOrEmpty(str))
+        {
+            List<SerializableLayer> serializables = JsonConvert.DeserializeObject<List<SerializableLayer>>(str);
+            for (int i = 0; i < serializables.Count; i++) _layers.Add(serializables[i]);
+        }
 
         LayersDeserialized?.Invoke();
         LayersUpdated?.Invoke();
@@ -104,6 +106,9 @@ public static class LayerManager
                     if (i > 0) SelectedLayer = _layers[i - 1];
                     else SelectedLayer = null;
                 }
+
+                LayersUpdated?.Invoke();
+
                 return;
             }
         }
@@ -119,6 +124,7 @@ public static class LayerManager
     {
         if (elements == null) return;
         var layer = GetLayer(layerGuid);
+        if (layer == null) return;
         var allElements = GridViewport.Instance.GetAllElements();
         for (int i = 0; i < allElements.Count; i++)
         {

@@ -5,8 +5,8 @@ using UnityEngine.EventSystems;
 public class UIDraggable : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     public UnityEvent OnStartDrag;
-    public UnityEvent<Vector2> OnDrag;
-    public UnityEvent<Vector2> OnDragWorld;
+    public UnityEvent<Vector2, RectTransform> OnDrag;
+    public UnityEvent<Vector2, RectTransform> OnDragWorld;
     public UnityEvent OnEndDrag;
 
     private Vector2 _lastMousePosition;
@@ -16,9 +16,9 @@ public class UIDraggable : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
         if (_isDragging)
         {
-            OnDrag?.Invoke((Vector2)Input.mousePosition - _lastMousePosition);
+            OnDrag?.Invoke((Vector2)Input.mousePosition - _lastMousePosition, (RectTransform)transform);
 
-            OnDragWorld?.Invoke(Camera.main.ScreenToWorldPoint(Input.mousePosition) - Camera.main.ScreenToWorldPoint(_lastMousePosition));
+            OnDragWorld?.Invoke(Camera.main.ScreenToWorldPoint(Input.mousePosition) - Camera.main.ScreenToWorldPoint(_lastMousePosition), (RectTransform)transform);
 
             if (Input.GetMouseButtonUp(0))
             {

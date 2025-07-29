@@ -157,8 +157,6 @@ public partial class ConnectionController : MonoBehaviour
 
             if (element1 && element2)
             {
-                if (element1.IsOutOfScreenBounds() && element2.IsOutOfScreenBounds()) continue;
-
                 if (!_arrows.ContainsKey(connection))
                 {
                     switch (connection.type)
@@ -180,7 +178,16 @@ public partial class ConnectionController : MonoBehaviour
                 }
 
                 var arrowVisible = element1.gameObject.activeSelf && element2.gameObject.activeSelf;
-                _arrows[connection].gameObject.SetActive(arrowVisible);
+
+                if (arrowVisible)
+                {
+                    if (!CameraController.IsWithinCameraBounds(element1.Rect) && !CameraController.IsWithinCameraBounds(element2.Rect)) arrowVisible = false;
+                }
+
+                if (_arrows[connection].gameObject.activeSelf != arrowVisible)
+                {
+                    _arrows[connection].gameObject.SetActive(arrowVisible);
+                }
 
                 if (arrowVisible)
                 {

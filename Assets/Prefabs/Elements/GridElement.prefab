@@ -1085,7 +1085,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _focusAlpha: 1
-  _blurAlpha: 0.15
+  _blurAlpha: 0
 --- !u!1 &7908392449701705796
 GameObject:
   m_ObjectHideFlags: 0

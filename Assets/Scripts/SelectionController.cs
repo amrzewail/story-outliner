@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class SelectionController : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+public class SelectionController : MonoBehaviour
 {
     private Image _selectionImage;
     private Vector2 _originalPosition;
@@ -14,6 +14,7 @@ public class SelectionController : MonoBehaviour, IPointerDownHandler, IPointerU
 
     private bool _isMoving = false;
     private Vector2 _lastMouseWorldPosition;
+    private Vector2 _mouseDownPosition;
 
     private List<GridElement> _selectedElements = new List<GridElement>();
     private HashSet<GridElement> _selectedMoveExclusions = new HashSet<GridElement>();
@@ -44,26 +45,46 @@ public class SelectionController : MonoBehaviour, IPointerDownHandler, IPointerU
     {
         if (!CameraController.IsMouseWithinScreen()) return;
 
-
-        if (Input.GetMouseButtonDown(0) && CameraController.IsMouseWithinViewport())
+        if (Input.GetMouseButtonDown(0) && CameraController.IsMouseWithinViewport() && !CameraController.IsMouseOverInteractiveElement())
         {
+            _mouseDownPosition = Input.mousePosition;
             _lastMouseWorldPosition = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            _isSelecting = true;
+            StartSelection();
         }
 
-        if (Input.GetMouseButtonUp(0) && !_isSelecting)
+        if (Input.GetMouseButtonUp(0) && _isSelecting)
         {
-            var mousePosition = (Vector2)Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            if ((mousePosition - _lastMouseWorldPosition).sqrMagnitude < 0.5f * 0.5f)
+            ClearSelection();
+
+
+            float dpi = Screen.dpi;
+            if (dpi <= 0) dpi = 96f;
+
+            float mmThreshold = 1.5f;
+            float pixelThreshold = mmThreshold * dpi / 25.4f;
+            float pixelThresholdSquared = pixelThreshold * pixelThreshold;
+
+            var mousePosition = (Vector2)Input.mousePosition;
+            if ((mousePosition - _mouseDownPosition).sqrMagnitude < pixelThresholdSquared)
             {
+                EndSelection(false);
+
                 if (_selectedElements.Count > 0) _selectedElements.ForEach(x => x.Deselect());
                 _selectedElements.Clear();
                 var elements = GridViewport.Instance.GetAllElements()
-                    .Where(x => Contains(x.Rect, new Rect(mousePosition, Vector2.zero)))
+                    .Where(x => x.gameObject.activeSelf && x.Rect.Contains(new Rect(_lastMouseWorldPosition, Vector2.zero)))
                     .ToList();
-                elements.Sort((x1, x2) => ((x1 is NoteElement ? 0 : 10000000) + x1.transform.GetSiblingIndex()).CompareTo((x2 is NoteElement ? 0 : 10000000) + x2.transform.GetSiblingIndex()));
+                elements.Sort((x1, x2) => (x1.SortOrder + x1.transform.GetSiblingIndex()).CompareTo(x2.SortOrder + x2.transform.GetSiblingIndex()));
 
                 if (elements.Count > 0) Select(elements.Last());
             }
+            else
+            {
+                EndSelection(true);
+            }
+
+            _isSelecting = false;
         }
 
         if (_isSelecting)
@@ -92,16 +113,15 @@ public class SelectionController : MonoBehaviour, IPointerDownHandler, IPointerU
             _selectionRect.size = _selectionImage.rectTransform.sizeDelta = size;
         }
 
-        if (Input.GetKeyDown(KeyCode.G) && CameraController.IsMouseWithinViewport())
+        if (!UIInputField.IsEditing && !TimelineElement.IsEditing && Input.GetKeyDown(KeyCode.G) && CameraController.IsMouseWithinViewport())
         {
             MoveSelection();
         }
 
-        if (Input.GetKeyDown(KeyCode.Delete) && CameraController.IsMouseWithinViewport())
+        if (!UIInputField.IsEditing && !TimelineElement.IsEditing && Input.GetKeyDown(KeyCode.Delete) && CameraController.IsMouseWithinViewport())
         {
             DeleteSelection();
         }
-
 
         if (_isMoving)
         {
@@ -179,60 +199,46 @@ public class SelectionController : MonoBehaviour, IPointerDownHandler, IPointerU
         element.Select();
     }
 
-    public void OnPointerDown(PointerEventData eventData)
+    private void ClearSelection()
     {
-        if (eventData.button == PointerEventData.InputButton.Left)
+        if (_selectedElements != null)
         {
-            _selectionImage.transform.SetAsLastSibling();
-
-            Vector3 pos = Camera.main.ScreenToWorldPoint(eventData.position);
-            _selectionRect.position = pos;
-            _originalPosition = pos;
-
-            _isSelecting = true;
-
-            _selectionImage.enabled = true;
-
-
-            if (_selectedElements != null)
+            _selectedElements.ForEach(x =>
             {
-                _selectedElements.ForEach(x =>
-                {
-                    if (x) x.Deselect();
-                });
-                _selectedElements.Clear();
-                _isMoving = false;
-            }
-
+                if (x) x.Deselect();
+            });
+            _selectedElements.Clear();
+            _isMoving = false;
         }
     }
 
-    public void OnPointerUp(PointerEventData eventData)
+    private void StartSelection()
+    {
+        _selectionImage.transform.SetAsLastSibling();
+
+        Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        _selectionRect.position = pos;
+        _originalPosition = pos;
+
+        _isSelecting = true;
+
+        _selectionImage.enabled = true;
+    }
+
+    private void EndSelection(bool grabElements)
     {
         _isSelecting = false;
 
         _selectionImage.enabled = false;
 
-        if (eventData.button == PointerEventData.InputButton.Left)
+        if (!grabElements) return;
+
+        var elements = GridViewport.Instance.GetAllElements().Where(x => x.gameObject.activeSelf && _selectionRect.Contains(x.Rect));
+
+        if (elements.Any())
         {
-            var elements = GridViewport.Instance.GetAllElements().Where(x => Contains(_selectionRect, x.Rect));
-
-            if (elements.Any())
-            {
-                _selectedElements = elements.ToList();
-                _selectedElements.ForEach(x => x.Select());
-            }
+            _selectedElements = elements.ToList();
+            _selectedElements.ForEach(x => x.Select());
         }
-    }
-
-
-    private bool Contains(Rect rect, Rect element)
-    {
-        var elementRect = element;
-        if (elementRect.x > rect.x && elementRect.y < rect.y && (elementRect.x + elementRect.width) < (rect.x + rect.width) && (elementRect.y - elementRect.height) > (rect.y - rect.height))
-        {
-            return true;
-        }
-        return false;
     }
 }

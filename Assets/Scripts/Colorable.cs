@@ -15,11 +15,13 @@ public class Colorable : MonoBehaviour
 
     public void SetColor(Color color)
     {
+        if (!_image) _image = GetComponent<Image>();
         _image.color = color;
     }
 
     public Color GetColor()
     {
+        if (!_image) _image = GetComponent<Image>();
         return _image.color;
     }
 }

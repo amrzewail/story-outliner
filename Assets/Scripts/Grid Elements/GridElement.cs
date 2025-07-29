@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using Newtonsoft.Json;
 using System;
 using System.Collections;
@@ -71,6 +72,9 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
         }
     }
     public Transform Transform { get; private set; }
+    public virtual int SortOrder { get; } = 0;
+
+    public bool IsSelected { get; private set; }
 
     [SerializeField] CanvasGroup _buttonsGroup;
     [SerializeField] CanvasGroup _inputsGroup;
@@ -90,10 +94,11 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
     {
         Transform = transform;
 
-
         _inputsGroup.interactable = false;
 
         LayerManager.LayersUpdated += LayersUpdatedCallback;
+
+        ChangeColor(GetColor());
     }
 
     private void OnDestroy()
@@ -107,7 +112,7 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
         var interactable = layer == LayerManager.SelectedLayer;
         _buttonsGroup.interactable = interactable;
         _buttonsGroup.alpha = interactable ? 1 : 0;
-        _inputsGroup.interactable = interactable;
+        _inputsGroup.interactable = interactable && IsSelected;
         GetComponent<CanvasGroup>().alpha = interactable ? 1 : 0.65f;
         GetComponent<CanvasGroup>().blocksRaycasts = interactable;
     }
@@ -138,7 +143,7 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
         _moveFrameIndex = Time.frameCount;
     }
 
-    public void MoveDragCallback(Vector2 dragWorld)
+    public void MoveDragCallback(Vector2 dragWorld, RectTransform target)
     {
         Vector3 position = Transform.position + new Vector3(dragWorld.x, dragWorld.y, 0);
 
@@ -216,13 +221,14 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
 
     protected virtual void ChangeColor(Color color)
     {
-        List<Colorable> colorable = GetComponentsInChildren<Colorable>().ToList();
+        List<Colorable> colorable = GetComponentsInChildren<Colorable>(true).ToList();
         colorable.ForEach(x => x.SetColor(new Color(color.r, color.g, color.b, x.GetColor().a)));
     }
 
     protected virtual Color GetColor()
     {
         Colorable colorable = GetComponentInChildren<Colorable>();
+        if (!colorable) return Color.white;
         return colorable.GetColor();
     }
 
@@ -234,7 +240,6 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        Debug.Log("pointer click!!");
     }
 
 
@@ -251,7 +256,7 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
         _resizeOffset = (Vector2)mousePosition - new Vector2(Rect.x + Rect.width, Rect.y - Rect.height);
     }
 
-    public virtual void DynamicResizeCallback(Vector2 dragWorld)
+    public virtual void DynamicResizeCallback(Vector2 dragWorld, RectTransform target)
     {
         _size = Size.Dynamic;
         var rect = Rect;
@@ -261,10 +266,14 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
         Rect = rect;
     }
 
-    public virtual void Select()
+    public virtual async void Select()
     {
+        IsSelected = true;
         Transform.Find("Selection").gameObject.SetActive(true);
         _buttonsGroup.gameObject.SetActive(true);
+
+        await UniTask.NextFrame();
+        await UniTask.NextFrame();
 
         var layer = LayerManager.GetElementLayer(guid);
         var interactable = layer == LayerManager.SelectedLayer;
@@ -273,6 +282,7 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
 
     public virtual void Deselect()
     {
+        IsSelected = false;
         Transform.Find("Selection").gameObject.SetActive(false);
         _buttonsGroup.gameObject.SetActive(false);
 
