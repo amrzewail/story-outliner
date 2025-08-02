@@ -33,6 +33,8 @@ public class CameraController : MonoBehaviour
         }
     }
 
+    public float Zoom => Mathf.InverseLerp(_zoomRange.min, _zoomRange.max, _camera.orthographicSize);
+
     public Camera Camera => _camera;
 
     private static PointerEventData _pointerData;

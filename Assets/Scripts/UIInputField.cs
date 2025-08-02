@@ -7,6 +7,7 @@ using System.Linq;
 public class UIInputField : MonoBehaviour
 {
     private TMP_InputField _inputField;
+    private TMP_SelectionCaret[] _carets;
 
     public static bool IsEditing { get; private set; }
 
@@ -21,9 +22,25 @@ public class UIInputField : MonoBehaviour
         _inputField.onDeselect.AddListener(EndEditCallback);
     }
 
+    private void Update()
+    {
+        _inputField.pointSize = _inputField.textComponent.fontSize;
+        _inputField.textComponent.rectTransform.offsetMin = Vector2.zero;
+        _inputField.textComponent.rectTransform.offsetMax = Vector2.zero;
+        for (int i = 0; i < _carets.Length; i++)
+        {
+            _carets[i].rectTransform.offsetMin = Vector2.zero;
+            _carets[i].rectTransform.offsetMax = Vector2.zero;
+        }
+    }
+
     private void Start()
     {
-        GetComponentsInChildren<TMP_SelectionCaret>().ToList().ForEach(c => c.raycastTarget = false);
+        _carets = GetComponentsInChildren<TMP_SelectionCaret>();
+        foreach(var c in _carets)
+        {
+            c.raycastTarget = false;
+        }
     }
 
     private void EndEditCallback(string arg0)

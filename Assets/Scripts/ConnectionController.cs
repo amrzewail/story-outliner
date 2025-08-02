@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System;
-using Newtonsoft.Json;
+using Cysharp.Threading.Tasks;
 
 public partial class ConnectionController : MonoBehaviour
 {
@@ -210,19 +210,19 @@ public partial class ConnectionController : MonoBehaviour
 
         _dontDestroy = false;
     }
-
-    public virtual string Serialize()
+    public virtual async UniTask<string> Serialize()
     {
+        await UniTask.NextFrame();
         List<SerializableConnection> serializables = new List<SerializableConnection>();
         for (int i = 0; i < _connections.Count; i++) serializables.Add(_connections[i]);
-        return JsonConvert.SerializeObject(serializables);
+        return new SerializedList<SerializableConnection>(serializables);
     }
 
     public virtual void Deserialize(string str)
     {
         Clear();
         if (string.IsNullOrEmpty(str)) return;
-        List<SerializableConnection> serializables = JsonConvert.DeserializeObject<List<SerializableConnection>>(str);
+        List<SerializableConnection> serializables = new SerializedList<SerializableConnection>(str);
         for (int i = 0; i < serializables.Count; i++) _connections.Add(serializables[i]);
     }
 

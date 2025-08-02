@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using Cysharp.Threading.Tasks;
 using RTLTMPro;
 using System;
 using System.Collections;
@@ -11,26 +11,26 @@ public class StoryEventElement : GridElement
     [SerializeField] TMP_InputField text;
 
     [Serializable]
-    private class Output
+    private struct Output
     {
         public Data self;
         public string parent;
     }
 
     [Serializable]
-    private class Data
+    private struct Data
     {
-        public string text = "";
+        public string text;
     }
     public void ArrowClickCallback()
     {
         ConnectionController.Instance.PrepareConnection(guid, ConnectionType.OneWay);
     }
 
-    public override string Serialize()
+    public override async UniTask<string> Serialize()
     {
         Output output = new Output();
-        output.parent = base.Serialize();
+        output.parent = await base.Serialize();
 
         Data data = new Data();
         if(text.textComponent is RTLTextMeshPro)
@@ -44,12 +44,12 @@ public class StoryEventElement : GridElement
 
         output.self = data;
 
-        return JsonConvert.SerializeObject(output);
+        return JsonUtility.ToJson(output);
     }
 
     public override void Deserialize(string str)
     {
-        Output output = JsonConvert.DeserializeObject<Output>(str);
+        Output output = JsonUtility.FromJson<Output>(str);
         base.Deserialize(output.parent);
 
         text.text = output.self.text;

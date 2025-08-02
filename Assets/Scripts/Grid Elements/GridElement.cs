@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using Newtonsoft.Json;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -21,15 +20,28 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
     };
 
     [Serializable]
-    private class Output
+    private struct Output
     {
         public string guid;
         public V3 position;
-        public Size size = Size.Medium;
-        public V3 color = new V3(0.34f, 0.34f, 0.34f);
+        public Size size;
+        public V3 color;
         public V3 rectSize;
+
+        public static Output Default
+        {
+            get
+            {
+                return new Output
+                {
+                    size = Size.Medium,
+                    color = new V3(0.34f, 0.34f, 0.34f)
+                };
+            }
+        }
     }
 
+    [Serializable]
     private struct V3
     {
         public float x, y, z;
@@ -306,9 +318,9 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
         return Mathf.Min(tx, ty);
     }
 
-    public virtual string Serialize()
+    public virtual async UniTask<string> Serialize()
     {
-        Output data = new Output();
+        Output data = Output.Default;
         data.guid = guid.ToString();
         data.position = new V3(){
             x = Transform.position.x,
@@ -319,12 +331,12 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
         data.color = new V3(color.r, color.g, color.b);
         data.size = _size;
         data.rectSize = new V3(Rect.size.x, Rect.size.y, 0);
-        return JsonConvert.SerializeObject(data);
+        return JsonUtility.ToJson(data);
     }
 
     public virtual void Deserialize(string str)
     {
-        Output data = JsonConvert.DeserializeObject<Output>(str);
+        Output data = JsonUtility.FromJson<Output>(str);
         guid = new Guid(data.guid);
         _size = data.size;
         if (_size == Size.Dynamic)

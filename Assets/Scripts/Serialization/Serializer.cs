@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using UnityEngine;
 public static class Serializer
 {
     [Serializable]
-    public class Story
+    public struct Story
     {
         public const int CURRENT_VERSION = 2;
 
@@ -17,13 +17,15 @@ public static class Serializer
         public string layers;
     }
 
-    public static string Serialize()
+    public static async UniTask<string> Serialize()
     {
-        string grid = GridViewport.Instance.Serialize();
-        string arrows = ConnectionController.Instance.Serialize();
-        string layers = LayerManager.Serialize();
+        await UniTask.NextFrame();
 
-        return JsonConvert.SerializeObject(new Story
+        string grid = await GridViewport.Instance.Serialize();
+        string arrows = await ConnectionController.Instance.Serialize();
+        string layers = await LayerManager.Serialize();
+
+        return JsonUtility.ToJson(new Story
         {
             version = Story.CURRENT_VERSION,
             grid = grid,
@@ -34,7 +36,7 @@ public static class Serializer
 
     public static void Deserialize(string str)
     {
-        Story data = JsonConvert.DeserializeObject<Story>(str);
+        Story data = JsonUtility.FromJson<Story>(str);
 
         GridViewport.Instance.Deserialize(data.grid);
         ConnectionController.Instance.Deserialize(data.arrows);

@@ -1,6 +1,5 @@
 using Cysharp.Threading.Tasks;
 using Moths.Collections;
-using Newtonsoft.Json;
 using RTLTMPro;
 using SFB;
 using System;
@@ -62,6 +61,7 @@ public class TimelineElement : GridElement
             slice._draggable = sliceGameObject.GetComponentInChildren<UIDraggable>();
             slice._deleteButton = sliceGameObject.GetComponentInChildren<Button>();
             slice._yearBubble = (RectTransform)sliceGameObject.Find("Year Bubble");
+            slice.isSelected = false;
             return slice;
         }
 
@@ -367,10 +367,10 @@ public class TimelineElement : GridElement
         }
     }
 
-    public override string Serialize()
+    public override async UniTask<string> Serialize()
     {
         Output output = new Output();
-        output.parent = base.Serialize();
+        output.parent = await base.Serialize();
 
         Data data = new Data();
         if(text.textComponent is RTLTextMeshPro)
@@ -387,12 +387,12 @@ public class TimelineElement : GridElement
 
         output.self = data;
 
-        return JsonConvert.SerializeObject(output);
+        return JsonUtility.ToJson(output);
     }
 
     public override void Deserialize(string str)
     {
-        Output output = JsonConvert.DeserializeObject<Output>(str);
+        Output output = JsonUtility.FromJson<Output>(str);
         base.Deserialize(output.parent);
 
         text.text = output.self.text;

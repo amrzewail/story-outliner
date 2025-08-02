@@ -1,6 +1,7 @@
-using Newtonsoft.Json;
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 
@@ -42,11 +43,12 @@ public static class LayerManager
         _layers = new List<Layer>();
     }
 
-    public static string Serialize()
+    public static async UniTask<string> Serialize()
     {
+        await UniTask.NextFrame();
         List<SerializableLayer> serializables = new List<SerializableLayer>();
         for (int i = 0; i < _layers.Count; i++) serializables.Add(_layers[i]);
-        return JsonConvert.SerializeObject(serializables);
+        return new SerializedList<SerializableLayer>(serializables);
     }
 
     public static void Deserialize(string str)
@@ -56,7 +58,7 @@ public static class LayerManager
 
         if (!string.IsNullOrEmpty(str))
         {
-            List<SerializableLayer> serializables = JsonConvert.DeserializeObject<List<SerializableLayer>>(str);
+            List<SerializableLayer> serializables = new SerializedList<SerializableLayer>(str);
             for (int i = 0; i < serializables.Count; i++) _layers.Add(serializables[i]);
         }
 

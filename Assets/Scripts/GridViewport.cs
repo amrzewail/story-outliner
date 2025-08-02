@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using Cysharp.Threading.Tasks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -45,6 +45,18 @@ public class GridViewport : MonoBehaviour
             _allElements.Remove(element.guid);
             element.Deserialize(e);
             _allElements.TryAdd(element.guid, element);
+        }
+    }
+
+    private void ReorderNoteElements()
+    {
+        var elements = GetAllElements().Where(e => e is NoteElement || e is TimelineElement)
+        .OrderByDescending(x => x.Rect.width * x.Rect.height)
+        .ToArray();
+
+        for (int i = 0; i < elements.Length; i++)
+        {
+            elements[i].Transform.SetSiblingIndex(i);
         }
     }
 
@@ -152,8 +164,10 @@ public class GridViewport : MonoBehaviour
     }
 
 
-    public virtual string Serialize()
+    public virtual async UniTask<string> Serialize()
     {
+        await UniTask.NextFrame();
+
         Data data = new Data();
         data.storyEvents = new List<string>();
         data.characters = new List<string>();
@@ -162,12 +176,12 @@ public class GridViewport : MonoBehaviour
 
         _notes = _notes.OrderByDescending(e => e.Rect.width * e.Rect.height).ToList();
 
-        foreach(var e in _storyEvents) data.storyEvents.Add(e.Serialize());
-        foreach(var e in _characters) data.characters.Add(e.Serialize());
-        foreach(var e in _notes) data.notes.Add(e.Serialize());
-        foreach(var e in _timelines) data.timelines.Add(e.Serialize());
+        foreach(var e in _storyEvents) data.storyEvents.Add(await e.Serialize());
+        foreach(var e in _characters) data.characters.Add(await e.Serialize());
+        foreach(var e in _notes) data.notes.Add(await e.Serialize());
+        foreach(var e in _timelines) data.timelines.Add(await e.Serialize());
 
-        return JsonConvert.SerializeObject(data);
+        return JsonUtility.ToJson(data);
     }
 
     public virtual void Deserialize(string str)
@@ -176,11 +190,13 @@ public class GridViewport : MonoBehaviour
 
         if (string.IsNullOrEmpty(str)) return;
 
-        Data data = JsonConvert.DeserializeObject<Data>(str);
+        Data data = JsonUtility.FromJson<Data>(str);
 
         DeserializeElement(data.storyEvents, Controller.Instance.storyEventPrefab);
         DeserializeElement(data.characters, Controller.Instance.characterPrefab);
         DeserializeElement(data.notes, Controller.Instance.notePrefab);
         DeserializeElement(data.timelines, Controller.Instance.timelinePrefab);
+
+        ReorderNoteElements();
     }
 }

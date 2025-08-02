@@ -2,10 +2,11 @@ using UnityEngine;
 using System.IO;
 using System;
 using System.IO.Compression;
+using Cysharp.Threading.Tasks;
 
 public static class SpriteLoader
 {
-    public static Sprite LoadSpriteFromFile(string path, float pixelsPerUnit = 100f)
+    public static async UniTask<Sprite> LoadSpriteFromFile(string path, float pixelsPerUnit = 100f)
     {
         if (!File.Exists(path))
         {
@@ -13,7 +14,7 @@ public static class SpriteLoader
             return null;
         }
 
-        byte[] imageData = File.ReadAllBytes(path);
+        byte[] imageData = await File.ReadAllBytesAsync(path);
         Texture2D texture = new Texture2D(2, 2); // size doesn't matter; LoadImage will resize it
 
         if (!texture.LoadImage(imageData))
@@ -35,13 +36,13 @@ public static class SpriteLoader
     }
 
     // Serialize a Sprite to compressed Base64 string
-    public static string Serialize(Sprite sprite)
+    public static async UniTask<string> Serialize(Sprite sprite)
     {
         if (sprite == null || sprite.texture == null)
             return null;
 
         byte[] jpgBytes = sprite.texture.EncodeToJPG(75);
-        byte[] compressedBytes = Compress(jpgBytes);
+        byte[] compressedBytes = await Compress(jpgBytes);
         return Convert.ToBase64String(compressedBytes);
     }
 
@@ -74,12 +75,12 @@ public static class SpriteLoader
     }
 
     // Brotli compression
-    private static byte[] Compress(byte[] data)
+    private static async UniTask<byte[]> Compress(byte[] data)
     {
         using (var output = new MemoryStream())
         {
             using (var brotli = new BrotliStream(output, System.IO.Compression.CompressionLevel.Optimal, leaveOpen: true))
-                brotli.Write(data, 0, data.Length);
+                await brotli.WriteAsync(data, 0, data.Length);
             return output.ToArray();
         }
     }

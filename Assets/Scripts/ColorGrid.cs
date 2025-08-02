@@ -116,12 +116,12 @@ public class ColorGrid : MonoBehaviour, IPointerClickHandler
             colors.AddRange(GetIntensities(color, depth));
         }
 
-        colors.AddRange(GetIntensities(new Color(0.34f, 0.34f, 0.34f), depth));
+        colors.AddRange(GetIntensities(new Color(0.34f, 0.34f, 0.34f), depth, 2));
 
         return colors;
     }
 
-    private List<Color> GetIntensities(Color col, int depth = 1)
+    private List<Color> GetIntensities(Color col, int depth = 1, float scale = 1.6f)
     {
         var colors = new List<Color>();
 
@@ -139,11 +139,11 @@ public class ColorGrid : MonoBehaviour, IPointerClickHandler
 
             float grayscale = intensity - 0.5f;
             if (grayscale >= 0) {
-                color = Color.Lerp(color, Color.white, grayscale * 1.6f);
+                color = Color.Lerp(color, Color.white, grayscale * scale);
             }
             else
             {
-                color = Color.Lerp(color, Color.black, -grayscale * 1.6f);
+                color = Color.Lerp(color, Color.black, -grayscale * scale);
             }
             color.a = 1;
             colors.Add(color);

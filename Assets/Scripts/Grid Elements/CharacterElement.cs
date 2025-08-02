@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using Cysharp.Threading.Tasks;
 using RTLTMPro;
 using System;
 using System.Collections;
@@ -16,18 +16,18 @@ public class CharacterElement : GridElement
         Count
     }
     [Serializable]
-    private class Output
+    private struct Output
     {
         public Data self;
         public string parent;
     }
 
     [Serializable]
-    private class Data
+    private struct Data
     {
-        public string name = "";
-        public string details = "";
-        public Gender gender = Gender.Male;
+        public string name;
+        public string details;
+        public Gender gender;
     }
 
 
@@ -77,10 +77,10 @@ public class CharacterElement : GridElement
     }
 
 
-    public override string Serialize()
+    public override async UniTask<string> Serialize()
     {
         Output output = new Output();
-        output.parent = base.Serialize();
+        output.parent = await base.Serialize();
 
         Data data = new Data();
         if (_name.textComponent is RTLTextMeshPro)
@@ -104,12 +104,12 @@ public class CharacterElement : GridElement
 
         output.self = data;
 
-        return JsonConvert.SerializeObject(output);
+        return JsonUtility.ToJson(output);
     }
 
     public override void Deserialize(string str)
     {
-        Output output = JsonConvert.DeserializeObject<Output>(str);
+        Output output = JsonUtility.FromJson<Output>(str);
         base.Deserialize(output.parent);
 
         _name.text = output.self.name;

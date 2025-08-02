@@ -24,14 +24,19 @@ public class Controller : MonoBehaviour
 
     private string _currentFile;
 
-    private string CurrentFile
+    public string CurrentFile
     {
         get => _currentFile;
-        set
+        private set
         {
             _currentFile = value;
             _currentStoryText.text = value;
         }
+    }
+
+    public bool IsWriting
+    {
+        get; private set;
     }
 
     private void Awake()
@@ -104,8 +109,10 @@ public class Controller : MonoBehaviour
         PlayerPrefs.Save();
     }
 
-    public void SaveCallback()
+    public async void SaveCallback()
     {
+        if (IsWriting) return;
+
         string lastFile = PlayerPrefs.GetString("LAST_FILE", "");
         string directory = !string.IsNullOrEmpty(lastFile) ? Path.GetDirectoryName(lastFile) : "";
 
@@ -122,8 +129,13 @@ public class Controller : MonoBehaviour
             File.Copy(CurrentFile, CurrentFile + ".bak", true);
         }
 
-        var str = Serializer.Serialize();
-        File.WriteAllText(CurrentFile, str);
+        IsWriting = true;
+
+        var str = await Serializer.Serialize();
+        
+        await File.WriteAllTextAsync(CurrentFile, str);
+
+        IsWriting = false;
 
         PlayerPrefs.SetString("LAST_FILE", CurrentFile);
         PlayerPrefs.Save();
