@@ -87,6 +87,7 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
     public virtual int SortOrder { get; } = 0;
 
     public bool IsSelected { get; private set; }
+    public bool IsInteractable { get; private set; } = true;
 
     [SerializeField] CanvasGroup _buttonsGroup;
     [SerializeField] CanvasGroup _inputsGroup;
@@ -121,12 +122,12 @@ public class GridElement : MonoBehaviour, IPointerClickHandler
     private void LayersUpdatedCallback()
     {
         var layer = LayerManager.GetElementLayer(guid);
-        var interactable = layer == LayerManager.SelectedLayer;
-        _buttonsGroup.interactable = interactable;
-        _buttonsGroup.alpha = interactable ? 1 : 0;
-        _inputsGroup.interactable = interactable && IsSelected;
-        GetComponent<CanvasGroup>().alpha = interactable ? 1 : 0.65f;
-        GetComponent<CanvasGroup>().blocksRaycasts = interactable;
+        IsInteractable = layer == LayerManager.SelectedLayer;
+        _buttonsGroup.interactable = IsInteractable;
+        _buttonsGroup.alpha = IsInteractable ? 1 : 0;
+        _inputsGroup.interactable = IsInteractable && IsSelected;
+        GetComponent<CanvasGroup>().alpha = IsInteractable ? 1 : 0.65f;
+        GetComponent<CanvasGroup>().blocksRaycasts = IsInteractable;
     }
 
     protected virtual void Start()

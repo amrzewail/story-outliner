@@ -1573,7 +1573,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3179475513286441824, guid: 827a5ad2dd91ac84b80a573df5baaf55, type: 3}
       propertyPath: m_LineType
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3179475513286441825, guid: 827a5ad2dd91ac84b80a573df5baaf55, type: 3}
       propertyPath: m_Pivot.x
@@ -1677,7 +1677,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3179475513673711365, guid: 827a5ad2dd91ac84b80a573df5baaf55, type: 3}
       propertyPath: m_fontSize
-      value: 35
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 3179475513673711365, guid: 827a5ad2dd91ac84b80a573df5baaf55, type: 3}
       propertyPath: m_fontStyle
@@ -1689,7 +1689,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3179475513673711365, guid: 827a5ad2dd91ac84b80a573df5baaf55, type: 3}
       propertyPath: m_fontSizeMax
-      value: 35
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 3179475513673711365, guid: 827a5ad2dd91ac84b80a573df5baaf55, type: 3}
+      propertyPath: m_fontSizeMin
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 3179475513673711365, guid: 827a5ad2dd91ac84b80a573df5baaf55, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 3179475513673711365, guid: 827a5ad2dd91ac84b80a573df5baaf55, type: 3}
       propertyPath: m_isRightToLeft
@@ -1697,7 +1705,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3179475513673711365, guid: 827a5ad2dd91ac84b80a573df5baaf55, type: 3}
       propertyPath: m_TextWrappingMode
-      value: 3
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3179475513673711365, guid: 827a5ad2dd91ac84b80a573df5baaf55, type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3179475513673711365, guid: 827a5ad2dd91ac84b80a573df5baaf55, type: 3}
       propertyPath: m_VerticalAlignment

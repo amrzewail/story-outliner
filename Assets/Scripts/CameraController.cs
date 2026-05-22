@@ -94,13 +94,29 @@ public class CameraController : MonoBehaviour
             _isDragging = false;
         }
 
+        // --- ZOOM LOGIC (Zoom to Mouse) ---
         var scrollDelta = Input.mouseScrollDelta.y;
 
         if (!Mathf.Approximately(scrollDelta, 0) && IsMouseWithinViewport())
         {
-            _camera.orthographicSize -= scrollDelta * _scrollSpeed * _camera.orthographicSize;
+            // 1. Grab the mouse world position BEFORE the zoom happens
+            Vector3 mouseWorldPosBeforeZoom = _camera.ScreenToWorldPoint(Input.mousePosition);
 
+            // 2. Apply the zoom change
+            _camera.orthographicSize -= scrollDelta * _scrollSpeed * _camera.orthographicSize;
             _camera.orthographicSize = Mathf.Clamp(_camera.orthographicSize, _zoomRange.min, _zoomRange.max);
+
+            // 3. Grab the mouse world position AFTER the zoom (it will have shifted)
+            Vector3 mouseWorldPosAfterZoom = _camera.ScreenToWorldPoint(Input.mousePosition);
+
+            // 4. Calculate the difference and shift the camera to offset the drift
+            Vector3 driftDifference = mouseWorldPosBeforeZoom - mouseWorldPosAfterZoom;
+
+            // Maintain the camera's original Z depth
+            Vector3 newTargetPosition = transform.position + driftDifference;
+            newTargetPosition.z = transform.position.z;
+
+            transform.position = newTargetPosition;
         }
     }
 

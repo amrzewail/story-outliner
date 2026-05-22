@@ -1,9 +1,10 @@
+using Cysharp.Threading.Tasks;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
-using System;
-using Cysharp.Threading.Tasks;
+using UnityEditor;
+using UnityEngine;
 
 public partial class ConnectionController : MonoBehaviour
 {
@@ -15,6 +16,9 @@ public partial class ConnectionController : MonoBehaviour
         public Guid to;
 
         public ConnectionType type;
+
+        public string text;
+
 
         public bool IsValid() => from != Guid.Empty && to != Guid.Empty;
 
@@ -175,6 +179,8 @@ public partial class ConnectionController : MonoBehaviour
 
                     }
                     GridViewport.Instance.SetBehind(_arrows[connection].transform);
+
+                    _arrows[connection].Text = connection.text;
                 }
 
                 var arrowVisible = element1.gameObject.activeSelf && element2.gameObject.activeSelf;
@@ -195,6 +201,8 @@ public partial class ConnectionController : MonoBehaviour
                     float angle = Mathf.Rad2Deg * Mathf.Atan2(direction.y, direction.x);
                     _arrows[connection].Set(element1.Transform.position, element2.Transform.position, element1.GetConnectionOffset(angle, connection.type), element2.GetConnectionOffset(angle, connection.type));
                 }
+
+                _arrows[connection].IsInteractable = element1.IsInteractable || element2.IsInteractable;
             }
             else
             {
@@ -213,6 +221,14 @@ public partial class ConnectionController : MonoBehaviour
     public virtual async UniTask<string> Serialize()
     {
         await UniTask.NextFrame();
+
+        for (int i = 0; i < _connections.Count; i++)
+        {
+            var connection = _connections[i];
+            connection.text = _arrows[connection].Text;
+            _connections[i] = connection;
+        }
+
         List<SerializableConnection> serializables = new List<SerializableConnection>();
         for (int i = 0; i < _connections.Count; i++) serializables.Add(_connections[i]);
         return new SerializedList<SerializableConnection>(serializables);

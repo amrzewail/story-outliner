@@ -8,6 +8,7 @@ public partial class ConnectionController
         public string from;
         public string to;
         public ConnectionType type;
+        public string text;
 
         public static implicit operator Connection(SerializableConnection serializable)
         {
@@ -15,7 +16,8 @@ public partial class ConnectionController
             {
                 from = new Guid(serializable.from),
                 to = new Guid(serializable.to),
-                type = serializable.type
+                type = serializable.type,
+                text = serializable.text,
             };
         }
 
@@ -25,7 +27,8 @@ public partial class ConnectionController
             {
                 from = connection.from.ToString(),
                 to = connection.to.ToString(),
-                type = connection.type
+                type = connection.type,
+                text = connection.text,
             };
         }
     }
