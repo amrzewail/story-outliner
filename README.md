@@ -1,6 +1,4 @@
-# story-outliner
-A visual node graphing tool for outlining story elements and character relations.
-Intended for arabic text, but can also be used for english with minor cursor issues
+# Story Outliner
+A visual node graphing tool for outlining branching story elements and character relations.
 
-<img width="1920" height="1032" alt="image" src="https://github.com/user-attachments/assets/676825ab-ce94-4db1-b1f7-37eaf718c4b1" />
-
+<img width="1916" height="1001" alt="image" src="https://github.com/user-attachments/assets/6b5e1b2d-5927-44d1-ae03-14de94c0aa11" />
